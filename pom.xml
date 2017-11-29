@@ -168,9 +168,8 @@
         </dependency>
         <dependency>
             <groupId>com.bootcamp</groupId>
-            <artifactId>bataBase</artifactId>
+            <artifactId>db-access</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
     </dependencies>
 
@@ -182,15 +181,25 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>1.5.3.RELEASE</version>
                 <!--<configuration>-->
-                    <!--<mainClass>com.bootcamp.application.Application</mainClass>-->
-                    <!--<layout>ZIP</layout>-->
+                <!--<mainClass>com.bootcamp.application.Application</mainClass>-->
+                <!--<layout>ZIP</layout>-->
                 <!--</configuration>-->
                 <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>repackage</goal>-->
-                        <!--</goals>-->
-                    <!--</execution>-->
+                <!--<execution>-->
+                <!--<goals>-->
+                <!--<goal>repackage</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
+
+                <!--<mainClass>com.bootcamp.application.Application</mainClass>-->
+                <!--<layout>ZIP</layout>-->
+                <!--</configuration>-->
+                <!--<executions>-->
+                <!--<execution>-->
+                <!--<goals>-->
+                <!--<goal>repackage</goal>-->
+                <!--</goals>-->
+                <!--</execution>-->
                 <!--</executions>-->
             </plugin>
             <plugin>
@@ -203,4 +212,44 @@
             </plugin>
         </plugins>
     </build>
+    
+    <profiles>
+        <!-- en local -->
+        <profile>
+            <!--profil de production a publier-->
+            <id>local</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources/local</directory>
+                    </resource>
+
+                </resources>
+            </build>
+        </profile>
+
+        <profile>
+            <!--profil de production a publier-->
+            <id>dev</id>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources/dev</directory>
+                    </resource>
+
+                </resources>
+            </build>
+        </profile>
+    </profiles>
 </project>

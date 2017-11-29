@@ -1,3 +1,4 @@
 target/
 .idea
 projet.service.fonctionnel.iml
+/src/main/resources/local/

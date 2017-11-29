@@ -1,1 +1,3 @@
-/target/
+target/
+.idea
+projet.service.fonctionnel.iml

@@ -44,7 +44,7 @@ public class ProjetController {
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<List<Projet>>(projets, httpStatus);
     }
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/count")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
@@ -53,10 +53,9 @@ public class ProjetController {
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
         map.put(MAP_COUNT_KEY, count);
-        
+
         return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
     }
-    
-    
+
 
 }

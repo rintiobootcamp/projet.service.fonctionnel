@@ -34,5 +34,9 @@ public class ProjetService implements DatabaseConstants{
     public List<Projet> findAll(HttpServletRequest request) throws SQLException {
         return projetCRUD.read();
     }
+    
+    public int getCountProject() throws SQLException{
+        return projetCRUD.read().size();
+    }
 
 }

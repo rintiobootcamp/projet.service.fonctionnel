@@ -1,29 +1,26 @@
 package com.bootcamp.controllers;
 
-import com.bootcamp.commons.exceptions.DatabaseException;
 import static com.bootcamp.commons.ws.constants.CommonsWsConstants.MAP_COUNT_KEY;
-import com.bootcamp.commons.ws.models.PilierUWs;
+import com.bootcamp.commons.ws.models.ProjetUWs;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
-import com.google.common.collect.HashBiMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController("ProjetController")
 @RequestMapping("/projet")
@@ -57,5 +54,23 @@ public class ProjetController {
         return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Read a projet", notes = "Read a projet")
+    public ResponseEntity<ProjetUWs> read(@PathVariable(name = "id") int id) {
+
+        ProjetUWs projetUWs = new ProjetUWs();
+        HttpStatus httpStatus = null;
+
+        try {
+            projetUWs = projetService.read(id);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<ProjetUWs>(projetUWs, httpStatus);
+    }
 
 }

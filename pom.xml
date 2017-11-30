@@ -168,7 +168,7 @@
         </dependency>
         <dependency>
             <groupId>com.bootcamp</groupId>
-            <artifactId>bataBase</artifactId>
+            <artifactId>database</artifactId>
             <version>1.0-SNAPSHOT</version>
             <type>jar</type>
         </dependency>

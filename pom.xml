@@ -168,11 +168,7 @@
         </dependency>
         <dependency>
             <groupId>com.bootcamp</groupId>
-<<<<<<< HEAD
-            <artifactId>db-access</artifactId>
-=======
             <artifactId>database</artifactId>
->>>>>>> master
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

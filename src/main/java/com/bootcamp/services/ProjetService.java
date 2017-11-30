@@ -24,19 +24,12 @@ import java.util.List;
 @Component
 public class ProjetService implements DatabaseConstants{
 
-    ProjetCRUD projetCRUD;
-
-    @PostConstruct
-    public void init(){
-        projetCRUD = new ProjetCRUD();
-    }
-
     public List<Projet> findAll(HttpServletRequest request) throws SQLException {
-        return projetCRUD.read();
+        return ProjetCRUD.read();
     }
     
     public int getCountProject() throws SQLException{
-        return projetCRUD.read().size();
+        return ProjetCRUD.read().size();
     }
 
 }

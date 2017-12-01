@@ -1,5 +1,6 @@
 package com.bootcamp.controllers;
 
+import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,34 +57,16 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
-//    @RequestMapping(method = RequestMethod.GET, value = "/count")
-//    @ApiVersions({"1.0"})
-//    @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
-//    public ResponseEntity<HashMap<String, Integer>> count() throws SQLException {
-//        HttpStatus httpStatus = null;
-//        int count = projetService.getCountProject();
-//        HashMap<String, Integer> map = new HashMap<>();
-//        map.put(MAP_COUNT_KEY, count);
-//
-//        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
-//    }
-//
-//    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-//    @ApiVersions({"1.0"})
-//    @ApiOperation(value = "Read a projet", notes = "Read a projet")
-//    public ResponseEntity<ProjetUWs> read(@PathVariable(name = "id") int id) {
-//
-//        ProjetUWs projetUWs = new ProjetUWs();
-//        HttpStatus httpStatus = null;
-//
-//        try {
-//            projetUWs = projetService.read(id);
-//            httpStatus = HttpStatus.OK;
-//        } catch (SQLException ex) {
-//            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-//            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-//        }
-//
-//        return new ResponseEntity<ProjetUWs>(projetUWs, httpStatus);
-//    }
+    @RequestMapping(method = RequestMethod.GET, value = "/count")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
+    public ResponseEntity<HashMap<String, Integer>> count() throws SQLException {
+        HttpStatus httpStatus = null;
+        int count = projetService.getCountProject();
+        HashMap<String, Integer> map = new HashMap<>();
+        map.put(CommonsWsConstants.MAP_COUNT_KEY, count);
+
+        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
+    }
+
 }

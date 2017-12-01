@@ -32,10 +32,10 @@ public class ProjetService implements DatabaseConstants {
         return projet;
     }
 
-//    public int getCountProject() throws SQLException {
-//        return ProjetCRUD.read().size();
-//    }
-//
+    public int getCountProject() throws SQLException {
+        return ProjetCRUD.read().size();
+    }
+
 //    public ProjetUWs read(int id) throws SQLException {
 //        ProjetUWs projetUWs = new ProjetUWs();
 //        Criterias criterias = new Criterias();
@@ -49,46 +49,46 @@ public class ProjetService implements DatabaseConstants {
 //
 //        return projetUWs;
 //    }
-//    
-//    public Phase getPhaseActuelle (Projet projet){
-//        Phase phaseActuelle = new Phase();
-//        
-//        for (Phase phase : projet.getPhases()){
-//            if(phase.isActif()){
-//                phaseActuelle = phase;
-//            }
-//        }
-//        return phaseActuelle;
-//    }
-//    
-//    public PhaseUWs buildPhaseUWs (Phase phase){
-//        PhaseUWs phaseUWs = new PhaseUWs();
-//        
-//        phaseUWs.setId(phase.getId());
-//        phaseUWs.setNom(phase.getNom());
-//        phaseUWs.setDateDebut(phase.getDateDebut());
-//        phaseUWs.setDateFin(phase.getDateFin());
-//        
-//        return phaseUWs;
-//    }
-//    
-//    public ProjetUWs buildProjetUWs (Projet projet){
-//        ProjetUWs projetUWs = new ProjetUWs();
-//        Phase phaseActuelle = this.getPhaseActuelle(projet);
-//        
-//        projetUWs.setId(projet.getId());
-//        projetUWs.setNom(projet.getNom());
-//        projetUWs.setReference(projet.getReference());
-//        projetUWs.setDescription(projet.getDescription());
-//        projetUWs.setPhaseActuelle(this.buildPhaseUWs(phaseActuelle));
-//        projetUWs.setBudgetPrevisionnel(projet.getBudgetPrevisionnel());
-//        projetUWs.setBudgetReel(projet.getBudgetReel());
-//        projetUWs.setCoutReel(projet.getCoutReel());
-//        projetUWs.setDateDebutPrevisionnel(projet.getDateDebutPrevisionnel());
-//        projetUWs.setDateDebutReel(projet.getDateDebutReel());
-//        projetUWs.setDateFinPrevisionnel(projet.getDateFinPrevisionnel());
-//        projetUWs.setDateFinReel(projet.getDateFinReel());
-//        
-//        return projetUWs;
-//    }
+
+    public Phase getPhaseActuelle (Projet projet){
+        Phase phaseActuelle = new Phase();
+
+        for (Phase phase : projet.getPhases()){
+            if(phase.isActif()){
+                phaseActuelle = phase;
+            }
+        }
+        return phaseActuelle;
+    }
+
+    public PhaseUWs buildPhaseUWs (Phase phase){
+        PhaseUWs phaseUWs = new PhaseUWs();
+
+        phaseUWs.setId(phase.getId());
+        phaseUWs.setNom(phase.getNom());
+        phaseUWs.setDateDebut(phase.getDateDebut());
+        phaseUWs.setDateFin(phase.getDateFin());
+
+        return phaseUWs;
+    }
+
+    public ProjetUWs buildProjetUWs (Projet projet){
+        ProjetUWs projetUWs = new ProjetUWs();
+        Phase phaseActuelle = this.getPhaseActuelle(projet);
+
+        projetUWs.setId(projet.getId());
+        projetUWs.setNom(projet.getNom());
+        projetUWs.setReference(projet.getReference());
+        projetUWs.setDescription(projet.getDescription());
+        projetUWs.setPhaseActuelle(this.buildPhaseUWs(phaseActuelle));
+        projetUWs.setBudgetPrevisionnel(projet.getBudgetPrevisionnel());
+        projetUWs.setBudgetReel(projet.getBudgetReel());
+        projetUWs.setCoutReel(projet.getCoutReel());
+        projetUWs.setDateDebutPrevisionnel(projet.getDateDebutPrevisionnel());
+        projetUWs.setDateDebutReel(projet.getDateDebutReel());
+        projetUWs.setDateFinPrevisionnel(projet.getDateFinPrevisionnel());
+        projetUWs.setDateFinReel(projet.getDateFinReel());
+
+        return projetUWs;
+    }
 }

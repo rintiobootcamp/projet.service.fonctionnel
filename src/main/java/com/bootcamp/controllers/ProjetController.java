@@ -1,7 +1,5 @@
 package com.bootcamp.controllers;
 
-import static com.bootcamp.commons.ws.constants.CommonsWsConstants.MAP_COUNT_KEY;
-import com.bootcamp.commons.ws.models.ProjetUWs;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
@@ -14,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,48 +25,64 @@ public class ProjetController {
 
     @Autowired
     ProjetService projetService;
-    @Autowired
-    HttpServletRequest request;
 
     @RequestMapping(method = RequestMethod.GET, value = "/")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
     public ResponseEntity<List<Projet>> findAll() throws SQLException {
         HttpStatus httpStatus = null;
-        List<Projet> projets = projetService.findAll(request);
+        List<Projet> projets = projetService.findAll();
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<List<Projet>>(projets, httpStatus);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "/count")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
-    public ResponseEntity<HashMap<String, Integer>> count() throws SQLException {
-        HttpStatus httpStatus = null;
-        int count = projetService.getCountProject();
-        HashMap<String, Integer> map = new HashMap<>();
-        map.put(MAP_COUNT_KEY, count);
-
-        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<ProjetUWs> read(@PathVariable(name = "id") int id) {
+    public ResponseEntity<Projet> read(@PathVariable(name = "id") int id) {
 
-        ProjetUWs projetUWs = new ProjetUWs();
+        Projet projet = new Projet();
         HttpStatus httpStatus = null;
 
         try {
-            projetUWs = projetService.read(id);
+            projet = projetService.read(id);
             httpStatus = HttpStatus.OK;
         } catch (SQLException ex) {
             Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return new ResponseEntity<ProjetUWs>(projetUWs, httpStatus);
+        return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
+//    @RequestMapping(method = RequestMethod.GET, value = "/count")
+//    @ApiVersions({"1.0"})
+//    @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
+//    public ResponseEntity<HashMap<String, Integer>> count() throws SQLException {
+//        HttpStatus httpStatus = null;
+//        int count = projetService.getCountProject();
+//        HashMap<String, Integer> map = new HashMap<>();
+//        map.put(MAP_COUNT_KEY, count);
+//
+//        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
+//    }
+//
+//    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+//    @ApiVersions({"1.0"})
+//    @ApiOperation(value = "Read a projet", notes = "Read a projet")
+//    public ResponseEntity<ProjetUWs> read(@PathVariable(name = "id") int id) {
+//
+//        ProjetUWs projetUWs = new ProjetUWs();
+//        HttpStatus httpStatus = null;
+//
+//        try {
+//            projetUWs = projetService.read(id);
+//            httpStatus = HttpStatus.OK;
+//        } catch (SQLException ex) {
+//            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+//            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+//        }
+//
+//        return new ResponseEntity<ProjetUWs>(projetUWs, httpStatus);
+//    }
 }

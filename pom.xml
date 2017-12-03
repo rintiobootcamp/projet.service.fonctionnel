@@ -168,7 +168,7 @@
         </dependency>
         <dependency>
             <groupId>com.bootcamp</groupId>
-            <artifactId>database</artifactId>
+            <artifactId>db-access</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

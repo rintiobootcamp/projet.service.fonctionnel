@@ -21,14 +21,14 @@ import java.util.logging.Logger;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController("ProjetController")
-@RequestMapping("/projet")
+@RequestMapping("/projets")
 @Api(value = "Projet API", description = "Projet API")
 public class ProjetController {
 
     @Autowired
     ProjetService projetService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/")
+    @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
     public ResponseEntity<List<Projet>> findAll() throws SQLException {
@@ -41,7 +41,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<Projet> read(@PathVariable(name = "id") int id) {
+    public ResponseEntity<Projet> read(@PathVariable int id) {
 
         Projet projet = new Projet();
         HttpStatus httpStatus = null;

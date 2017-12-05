@@ -3,7 +3,9 @@ package com.bootcamp.services;
 import com.bootcamp.commons.constants.DatabaseConstants;
 import com.bootcamp.commons.models.Criteria;
 import com.bootcamp.commons.models.Criterias;
+import com.bootcamp.crud.CommentaireCRUD;
 import com.bootcamp.crud.ProjetCRUD;
+import com.bootcamp.entities.Commentaire;
 import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,10 @@ import java.util.List;
 @Component
 public class ProjetService implements DatabaseConstants {
 
+    public Projet create(Projet projet) throws SQLException {
+        ProjetCRUD.create(projet);
+        return projet;
+    }
     public List<Projet> findAll() throws SQLException {
         return ProjetCRUD.read();
     }

@@ -1,6 +1,7 @@
 package com.bootcamp.controllers;
 
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
+import com.bootcamp.entities.Commentaire;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
@@ -18,15 +19,35 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.validation.Valid;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController("ProjetController")
 @RequestMapping("/projets")
+@CrossOrigin(origins = "*")
 @Api(value = "Projet API", description = "Projet API")
 public class ProjetController {
 
     @Autowired
     ProjetService projetService;
+    
+    @RequestMapping(method = RequestMethod.POST)
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Create a new project", notes = "Create a new project")
+    public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) {
+
+        HttpStatus httpStatus = null;
+        
+        try {
+            projet = projetService.create(projet);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ResponseEntity<Projet>(projet, httpStatus);
+    }
 
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})

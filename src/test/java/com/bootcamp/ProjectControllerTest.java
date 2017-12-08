@@ -1,6 +1,5 @@
 package com.bootcamp;
 
-import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.controllers.ProjetController;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
@@ -13,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

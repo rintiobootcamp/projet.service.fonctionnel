@@ -72,14 +72,8 @@ public class ProjectControllerTest {
    @Test
     public void countProjet() throws Exception{
        Projet projet = new Projet();
-       Projet projet1 = new Projet();
-       projet.setId(1);
        projet.setNom("Projet 1");
-       projet1.setId(2);
-       projet1.setNom("Projet 2");
-       List<Projet> allProjets = new ArrayList<>();
-       allProjets.add(projet);
-       allProjets.add(projet1);
+       List<Projet> allProjets = Arrays.asList(projet);
        int count = allProjets.size();
        HashMap<String, Integer> map = new HashMap<>();
        map.put("count",count);

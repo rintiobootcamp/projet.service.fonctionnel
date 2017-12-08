@@ -5,7 +5,7 @@
  * <p>
  * Created by bilalshah on 20/12/2016
  */
-package com.bootcamp.application;
+package com.bootcamp;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -8,9 +8,7 @@ import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

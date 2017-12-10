@@ -41,15 +41,15 @@ public class ProjetService implements DatabaseConstants {
     }
 
 
-    public Phase getPhaseActuelle (Projet projet){
-        Phase phaseActuelle = new Phase();
+    public List<Phase>  getPhasesActuelles (Projet projet){
+        List<Phase> phasesActuelles = new ArrayList<>();
 
         for (Phase phase : projet.getPhases()){
             if(phase.isActif()){
-                phaseActuelle = phase;
+                phasesActuelles.add( phase);
             }
         }
-        return phaseActuelle;
+        return phasesActuelles;
     }
 
 }

@@ -1,8 +1,10 @@
 package com.bootcamp.controllers;
 
+import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Commentaire;
 import com.bootcamp.entities.Projet;
+import com.bootcamp.entities.Secteur;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -14,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +36,9 @@ public class ProjetController {
 
     @Autowired
     ProjetService projetService;
+
+    @Autowired
+    HttpServletRequest request;
     
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
@@ -49,30 +56,15 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Update a existing project", notes = "Update a existing project")
-    public ResponseEntity<Projet> update(@RequestBody @Valid Projet projet) {
-
-        HttpStatus httpStatus = null;
-
-        try {
-            projet = projetService.update(projet);
-            httpStatus = HttpStatus.OK;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new ResponseEntity<Projet>(projet, httpStatus);
-    }
 
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
-    public ResponseEntity<List<Projet>> findAll() throws SQLException {
+    public ResponseEntity<List<Projet>> findAll() throws Exception {
         HttpStatus httpStatus = null;
-        List<Projet> projets = projetService.findAll();
+        List<Projet> projets = projetService.readAll(request);
         httpStatus = HttpStatus.OK;
-        return new ResponseEntity<List<Projet>>(projets, httpStatus);
+        return new ResponseEntity<List<Projet>>(projets,httpStatus);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
@@ -94,24 +86,23 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @RequestMapping(method = RequestMethod.PUT)
     @ApiVersions({"1.0"})
-    @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<Boolean> delete(@PathVariable int id) {
+    @ApiOperation(value = "Update a projet", notes = "update a projet")
+    public ResponseEntity<Boolean> update(@RequestBody @Valid Projet projet) throws Exception {
+        boolean done =  projetService.update(projet);
+        return new ResponseEntity<>(done, HttpStatus.OK);
+    }
 
-        Projet projet = new Projet();
-        HttpStatus httpStatus = null;
-        boolean done = false;
+  
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "delete Projets", notes = "delete a particular Projets")
+    public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
+        if(projetService.exist(id));
+        boolean done = projetService.delete(id);
+        return new ResponseEntity<>(done, HttpStatus.OK);
 
-        try {
-            done = projetService.delete(id);
-            httpStatus = HttpStatus.OK;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-
-        return new ResponseEntity<>(done, httpStatus);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/count")
@@ -122,7 +113,6 @@ public class ProjetController {
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
         map.put(CommonsWsConstants.MAP_COUNT_KEY, count);
-
         return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ package com.bootcamp.controllers;
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Commentaire;
+import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.entities.Secteur;
 import com.bootcamp.services.ProjetService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -39,20 +41,26 @@ public class ProjetController {
 
     @Autowired
     HttpServletRequest request;
-    
+
+    //@bignon control s'il n'existe pas de projet de meme nom dans le programme avant d'enregistrer
+    //Bignon: mais je ne sais pas cmt envoyer une erreur ou cas ou ...
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
-    public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) {
+    public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) throws SQLException {
 
         HttpStatus httpStatus = null;
-        
-        try {
-            projet = projetService.create(projet);
-            httpStatus = HttpStatus.OK;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            if(!projetService.checkByName(projet.getNom(),projet.getIdProgramme())){
+                try {
+                projet = projetService.create(projet);
+                httpStatus = HttpStatus.OK;
+                } catch (SQLException ex) {
+                    Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+
+
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
@@ -94,6 +102,16 @@ public class ProjetController {
         return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
+    //Bignon: cette methode met a jour la liste de phase actuelles
+    @RequestMapping(method = RequestMethod.PUT, value="/phasesActuelles")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Update a projet currents phases", notes = "update a projet currents phases")
+    public  ResponseEntity<List<Phase>> updatePhasesList(@RequestBody @Valid Projet projet, Phase phase ) throws Exception {
+
+        List<Phase> phasesActuelles =  projetService.setPhasesActuelles(projet,phase);
+        return new ResponseEntity<>(phasesActuelles, HttpStatus.OK);
+    }
+
   
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ApiVersions({"1.0"})
@@ -113,7 +131,28 @@ public class ProjetController {
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
         map.put(CommonsWsConstants.MAP_COUNT_KEY, count);
-        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
+
+    //@Bignon
+    @RequestMapping(method = RequestMethod.GET, value = "/stat")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Get statistics of a project", notes = "Get statistics of a project")
+    public ResponseEntity<List<HashMap<String, Object>>> statistics(int id) throws SQLException {
+        HttpStatus httpStatus = null;
+        Object obj = projetService.avancementPhase(id).toArray();
+        double taux = projetService.avancementBudget(id);
+
+        List<HashMap<String, Object>> list = null;
+        HashMap<String, Object> map = null;
+
+        map.put("Taux budget", taux);
+        list.add(map);
+        map.put("temp par phase",obj);
+        list.add(map);
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
 
 }

@@ -3,10 +3,7 @@ package com.bootcamp.service;
 import com.bootcamp.application.Application;
 import com.bootcamp.commons.utils.GsonUtils;
 import com.bootcamp.crud.ProjetCRUD;
-import com.bootcamp.entities.Axe;
-import com.bootcamp.entities.Pilier;
-import com.bootcamp.entities.Projet;
-import com.bootcamp.entities.Secteur;
+import com.bootcamp.entities.*;
 import com.bootcamp.services.ProjetService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -30,7 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -60,6 +56,25 @@ public class ProjetServiceTest {
         LOG.info(" get all projet test done");
 
     }
+
+    //bignon
+    @Test
+        private Projet getProjetById(int id) throws Exception {
+        List<Projet> projets = loadDataProjetFromJsonFile();
+        Projet projet = projets.stream().filter(item -> item.getId() == id).findFirst().get();
+
+        return projet;
+    }
+
+    //@Test  // test to complete
+    private Projet avancementBudget() throws Exception {
+        Projet projet = getProjetById(1);
+        double taux = ( projet.getBudgetPrevisionnel() / projet.getCoutReel() ) ;
+
+        // ...
+        return projet;
+    }
+
 
     @Test
     public void create() throws Exception{
@@ -115,111 +130,6 @@ public class ProjetServiceTest {
 
         return projets;
     }
-
-    public List<Secteur> loadDataSecteurFromJsonFile() throws Exception {
-        //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "secteurs.json");
-
-        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
-
-        Type typeOfObjectsListNew = new TypeToken<List<Secteur>>() {
-        }.getType();
-        List<Secteur> secteurs = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
-
-        return secteurs;
-    }
-
-    private Secteur getSecteurById(int id) throws Exception {
-        List<Secteur> secteurs = loadDataSecteurFromJsonFile();
-        Secteur secteur = secteurs.stream().filter(item -> item.getId() == id).findFirst().get();
-
-        return secteur;
-    }
-
-    public Axe getAxeById(int id) throws Exception {
-        List<Axe> projets = loadDataAxeFromJsonFile();
-        Axe projet = projets.stream().filter(item -> item.getId() == id).findFirst().get();
-
-        return projet;
-    }
-
-
-    public List<Axe> loadDataAxeFromJsonFile() throws Exception {
-        //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "projets.json");
-
-        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
-
-        Type typeOfObjectsListNew = new TypeToken<List<Axe>>() {
-        }.getType();
-        List<Axe> projets = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
-
-        for (int i = 0; i < projets.size(); i++) {
-            Axe projet = projets.get(i);
-            List<Secteur> secteurs = new LinkedList();
-            switch (i) {
-                case 0:
-                    secteurs.add(getSecteurById(8));
-                    break;
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    secteurs.add(getSecteurById(1));
-                    secteurs.add(getSecteurById(2));
-                    secteurs.add(getSecteurById(5));
-                    secteurs.add(getSecteurById(9));
-                    break;
-                case 4:
-                    secteurs.add(getSecteurById(3));
-                    break;
-                case 5:
-                    secteurs.add(getSecteurById(8));
-                    break;
-                case 6:
-                    secteurs.add(getSecteurById(6));
-                    break;
-            }
-            projet.setSecteurs(secteurs);
-        }
-
-        return projets;
-    }
-
-    public List<Pilier> loadDataPilierFromJsonFile() throws Exception {
-        //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "piliers.json");
-
-        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
-
-        Type typeOfObjectsListNew = new TypeToken<List<Pilier>>() {
-        }.getType();
-        List<Pilier> piliers = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
-        for (int i = 0; i < piliers.size(); i++) {
-            List<Axe> projets = new LinkedList();
-            Pilier pilier = piliers.get(i);
-            switch (i) {
-                case 0:
-                    projets.add(getAxeById(1));
-                    projets.add(getAxeById(2));
-                    break;
-                case 1:
-                    projets.add(getAxeById(3));
-                    projets.add(getAxeById(4));
-                    projets.add(getAxeById(5));
-                    break;
-                case 2:
-                    projets.add(getAxeById(6));
-                    projets.add(getAxeById(7));
-                    break;
-            }
-            pilier.setAxes(projets);
-        }
-
-        return piliers;
-    }
-
 
     public List<Projet> loadDataProjetFromJsonFile() throws Exception {
         //TestUtils testUtils = new TestUtils();

@@ -49,6 +49,22 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
+    @RequestMapping(method = RequestMethod.PUT)
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Update a existing project", notes = "Update a existing project")
+    public ResponseEntity<Projet> update(@RequestBody @Valid Projet projet) {
+
+        HttpStatus httpStatus = null;
+
+        try {
+            projet = projetService.update(projet);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ResponseEntity<Projet>(projet, httpStatus);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
@@ -76,6 +92,26 @@ public class ProjetController {
         }
 
         return new ResponseEntity<Projet>(projet, httpStatus);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Read a projet", notes = "Read a projet")
+    public ResponseEntity<Boolean> delete(@PathVariable int id) {
+
+        Projet projet = new Projet();
+        HttpStatus httpStatus = null;
+        boolean done = false;
+
+        try {
+            done = projetService.delete(id);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(done, httpStatus);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/count")

@@ -25,6 +25,17 @@ public class ProjetService implements DatabaseConstants {
         ProjetCRUD.create(projet);
         return projet;
     }
+
+    public Projet update(Projet projet) throws SQLException {
+        ProjetCRUD.create(projet);
+        return projet;
+    }
+
+    public boolean delete(int id) throws SQLException {
+        Projet projet = read( id );
+        return ProjetCRUD.delete(projet);
+    }
+
     public List<Projet> findAll() throws SQLException {
         return ProjetCRUD.read();
     }

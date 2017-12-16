@@ -2,9 +2,7 @@ package com.bootcamp.controllers;
 
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
-import com.bootcamp.entities.Commentaire;
 import com.bootcamp.entities.Projet;
-import com.bootcamp.entities.Secteur;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -28,6 +26,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ *
+ * @author Bello
+ */
 @RestController("ProjetController")
 @RequestMapping("/projets")
 @CrossOrigin(origins = "*")
@@ -39,14 +41,20 @@ public class ProjetController {
 
     @Autowired
     HttpServletRequest request;
-    
+
+    /**
+     * Insert the given project in the database
+     *
+     * @param projet
+     * @return projet
+     */
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
     public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) {
 
         HttpStatus httpStatus = null;
-        
+
         try {
             projet = projetService.create(projet);
             httpStatus = HttpStatus.OK;
@@ -56,6 +64,12 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
+    /**
+     * Get all the projects in the database
+     *
+     * @return projects list
+     * @throws Exception
+     */
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
@@ -63,9 +77,15 @@ public class ProjetController {
         HttpStatus httpStatus = null;
         List<Projet> projets = projetService.readAll(request);
         httpStatus = HttpStatus.OK;
-        return new ResponseEntity<List<Projet>>(projets,httpStatus);
+        return new ResponseEntity<List<Projet>>(projets, httpStatus);
     }
 
+    /**
+     * Get a project by its id
+     *
+     * @param id
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
@@ -85,25 +105,46 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
-
+    /**
+     * Update the given project in the database
+     *
+     * @param projet
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(method = RequestMethod.PUT)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Update a projet", notes = "update a projet")
     public ResponseEntity<Boolean> update(@RequestBody @Valid Projet projet) throws Exception {
-        boolean done =  projetService.update(projet);
+        boolean done = projetService.update(projet);
         return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
-  
+    /**
+     * Delete a project by its id
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     * @throws IllegalAccessException
+     * @throws DatabaseException
+     * @throws InvocationTargetException
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete Projets", notes = "delete a particular Projets")
     public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
-        if(projetService.exist(id));
+        if (projetService.exist(id));
         boolean done = projetService.delete(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
+    /**
+     * Count all the projects in the database
+     *
+     * @return count
+     * @throws SQLException
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/count")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get count of projects", notes = "Get count of projects")

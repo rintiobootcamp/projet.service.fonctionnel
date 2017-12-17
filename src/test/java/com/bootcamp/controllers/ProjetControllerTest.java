@@ -99,7 +99,6 @@ public class ProjetControllerTest {
         Projet projet = new Projet();
         projet.setId(10);
         projet.setNom("projet teste");
-        when(!projetService.exist(projet)).thenReturn(false);
         when(projetService.create(projet)).thenReturn(projet);
 
         RequestBuilder requestBuilder =
@@ -123,7 +122,6 @@ public class ProjetControllerTest {
         int id = 7;
         Projet projet = new Projet();
         projet.setNom("projet update");
-        when(projetService.exist(id)).thenReturn(true);
         when(projetService.update(projet)).thenReturn(true);
 
         RequestBuilder requestBuilder =
@@ -147,7 +145,6 @@ public class ProjetControllerTest {
     public void testDeleteProjet() throws Exception{
         int id = 7;
         Projet projet = getProjetById(id);
-        when(projetService.exist(id)).thenReturn(true);
         when(projetService.delete(id)).thenReturn(true);
 
         RequestBuilder requestBuilder =
@@ -211,7 +208,7 @@ public class ProjetControllerTest {
         return secteurs;
     }
 
-    private Projet getProjetById(int id) throws Exception {
+    public Projet getProjetById(int id) throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
         Projet projet = projets.stream().filter(item->item.getId()==id).findFirst().get();
 

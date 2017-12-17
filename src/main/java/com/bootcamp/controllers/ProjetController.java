@@ -1,7 +1,9 @@
 package com.bootcamp.controllers;
 
+
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
+import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
@@ -42,6 +44,7 @@ public class ProjetController {
     @Autowired
     HttpServletRequest request;
 
+
     /**
      * Insert the given project in the database
      *
@@ -51,7 +54,8 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
-    public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) {
+    public ResponseEntity<Projet> create(@RequestBody Projet projet) throws SQLException {
+
 
         HttpStatus httpStatus = null;
 
@@ -70,7 +74,7 @@ public class ProjetController {
      * @return projects list
      * @throws Exception
      */
-    @RequestMapping(method = RequestMethod.GET)
+     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
     public ResponseEntity<List<Projet>> findAll() throws Exception {
@@ -105,6 +109,7 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
+
     /**
      * Update the given project in the database
      *
@@ -120,10 +125,24 @@ public class ProjetController {
         return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
+
+
+    //Bignon: cette methode met a jour la liste de phase actuelles
+    @RequestMapping(method = RequestMethod.PUT, value="/phasesActuelles")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Update a projet currents phases", notes = "update a projet currents phases")
+    public  ResponseEntity<List<Phase>> updatePhasesList(@RequestBody @Valid Projet projet, Phase phase ) throws Exception {
+
+        List<Phase> phasesActuelles =  projetService.setPhasesActuelles(projet,phase);
+        return new ResponseEntity<>(phasesActuelles, HttpStatus.OK);
+    }
+
+
+
     /**
      * Delete a project by its id
      *
-     * @param id
+     *@param id
      * @return
      * @throws Exception
      * @throws IllegalAccessException
@@ -134,9 +153,10 @@ public class ProjetController {
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete Projets", notes = "delete a particular Projets")
     public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
-        if (projetService.exist(id));
-        boolean done = projetService.delete(id);
+
+       boolean done = projetService.delete(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
+
     }
 
     /**
@@ -152,8 +172,29 @@ public class ProjetController {
         HttpStatus httpStatus = null;
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
-        map.put(CommonsWsConstants.MAP_COUNT_KEY, count);
-        return new ResponseEntity<HashMap<String, Integer>>(map, HttpStatus.OK);
+        map.put( CommonsWsConstants.MAP_COUNT_KEY, count);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
+
+    //@Bignon
+    @RequestMapping(method = RequestMethod.GET, value = "/stat")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Get statistics of a project", notes = "Get statistics of a project")
+    public ResponseEntity<List<HashMap<String, Object>>> statistics(int id) throws SQLException {
+        HttpStatus httpStatus = null;
+        Object obj = projetService.avancementPhase(id).toArray();
+        double taux = projetService.avancementBudget(id);
+
+        List<HashMap<String, Object>> list = null;
+        HashMap<String, Object> map = null;
+
+        map.put("Taux budget", taux);
+        list.add(map);
+        map.put("temp par phase",obj);
+        list.add(map);
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
 
 }

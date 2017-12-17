@@ -91,18 +91,6 @@ public class ProjetService implements DatabaseConstants {
         return phasesActuelles;
     }
 
-    // @Bignon cette methode n'avait pas pris en compte idProgramme
-    public boolean checkByName(String nom,int idProgramme) throws SQLException {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("nom", "=", nom));
-        criterias.addCriteria(new Criteria("idProgramme","=",idProgramme));
-        List<Projet> projets = ProjetCRUD.read(criterias);
-
-        if (projets.get(0) == null)
-            return false;
-        else
-            return true;
-    }
 
     //@Bignon : calcul du taux d'avancement par budget d'un projet
     public double avancementBudget(int id) throws SQLException {
@@ -171,5 +159,6 @@ public class ProjetService implements DatabaseConstants {
             return true;
         return false;
     }
+
 
 }

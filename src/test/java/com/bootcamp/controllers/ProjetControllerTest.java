@@ -99,7 +99,6 @@ public class ProjetControllerTest {
         Projet projet = new Projet();
         projet.setId(10);
         projet.setNom("projet teste");
-        when(!projetService.checkByName(projet.getNom(),projet.getIdProgramme())).thenReturn(false);
         when(projetService.create(projet)).thenReturn(projet);
 
         RequestBuilder requestBuilder =
@@ -123,7 +122,6 @@ public class ProjetControllerTest {
         int id = 7;
         Projet projet = new Projet();
         projet.setNom("projet update");
-        when(projetService.checkByName(projet.getNom(),projet.getIdProgramme())).thenReturn(true);
         when(projetService.update(projet)).thenReturn(true);
 
         RequestBuilder requestBuilder =
@@ -147,7 +145,6 @@ public class ProjetControllerTest {
     public void testDeleteProjet() throws Exception{
         int id = 7;
         Projet projet = getProjetById(id);
-        when(projetService.checkByName(projet.getNom(),projet.getIdProgramme())).thenReturn(true);
         when(projetService.delete(id)).thenReturn(true);
 
         RequestBuilder requestBuilder =

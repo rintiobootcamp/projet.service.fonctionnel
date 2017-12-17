@@ -47,21 +47,12 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
-    public ResponseEntity<Projet> create(@RequestBody @Valid Projet projet) throws SQLException {
+    public ResponseEntity<Projet> create(@RequestBody Projet projet) throws SQLException {
 
-        HttpStatus httpStatus = null;
-            if(!projetService.checkByName(projet.getNom(),projet.getIdProgramme())){
-                try {
+        HttpStatus httpStatus = HttpStatus.NO_CONTENT;
                 projet = projetService.create(projet);
                 httpStatus = HttpStatus.OK;
-                } catch (SQLException ex) {
-                    Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-
-
-        return new ResponseEntity<Projet>(projet, httpStatus);
+         return new ResponseEntity<>(projet, httpStatus);
     }
 
 
@@ -117,7 +108,6 @@ public class ProjetController {
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete Projets", notes = "delete a particular Projets")
     public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
-        if(projetService.exist(id));
         boolean done = projetService.delete(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
 

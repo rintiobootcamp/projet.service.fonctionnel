@@ -82,12 +82,7 @@ public class ProjetControllerIntegrationTest {
         String createURI = BASE_URI+PROJET_PATH;
         Projet projet = getProjetById( 1 );
         projet.setId( projetId );
-        projet.setNom( "je change encore le nom" );
-        projet.setRegions( null );
-        projet.setPhasesActuelles( null );
-        projet.setObjectifList( null );
-        projet.setPhases( null );
-        projet.setImpactList( null );
+        projet.setNom( "je change juste encore le nom" );
         projet.setIdProgramme( 1 );
         Gson gson = new Gson();
         String projetData = gson.toJson( projet );

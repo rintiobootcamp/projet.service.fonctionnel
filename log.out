@@ -1,16 +1,4 @@
 [INFO] Scanning for projects...
-[WARNING] 
-[WARNING] Some problems were encountered while building the effective model for com.bootcamp:projet.service.fonctionnel:war:1.0-SNAPSHOT
-<<<<<<< HEAD
-[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 207, column 21
-=======
-[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 235, column 21
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
-[WARNING] 
-[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-[WARNING] 
-[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-[WARNING] 
 [INFO] 
 [INFO] ------------------------------------------------------------------------
 [INFO] Building projet.service.fonctionnel 1.0-SNAPSHOT
@@ -20,57 +8,34 @@
 [INFO] 
 [INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ projet.service.fonctionnel ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
-<<<<<<< HEAD
-[INFO] skip non existing resourceDirectory /home/ibrahim/release4/projet.service.fonctionnel/src/main/resources
-[INFO] Copying 18 resources
+[INFO] skip non existing resourceDirectory /Bootcamp/Clone/projet.service.fonctionnel/src/main/resources
+[INFO] Copying 21 resources
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ projet.service.fonctionnel ---
+[INFO] --- maven-compiler-plugin:3.3:compile (default-compile) @ projet.service.fonctionnel ---
 [INFO] Nothing to compile - all classes are up to date
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ projet.service.fonctionnel ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /home/ibrahim/release4/projet.service.fonctionnel/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ projet.service.fonctionnel ---
-[INFO] Nothing to compile - all classes are up to date
-=======
-[INFO] skip non existing resourceDirectory /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/main/resources
-[INFO] Copying 18 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ projet.service.fonctionnel ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 8 source files to /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/target/classes
 [INFO] 
 [INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ projet.service.fonctionnel ---
 [INFO] Using 'UTF-8' encoding to copy filtered resources.
 [INFO] Copying 4 resources
 [INFO] 
-[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ projet.service.fonctionnel ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 2 source files to /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/target/test-classes
-[WARNING] /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java: /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java uses unchecked or unsafe operations.
-[WARNING] /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java: Recompile with -Xlint:unchecked for details.
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
+[INFO] --- maven-compiler-plugin:3.3:testCompile (default-testCompile) @ projet.service.fonctionnel ---
+[INFO] Nothing to compile - all classes are up to date
 [INFO] 
 [INFO] <<< spring-boot-maven-plugin:1.5.3.RELEASE:run (default-cli) < test-compile @ projet.service.fonctionnel <<<
 [INFO] 
 [INFO] 
 [INFO] --- spring-boot-maven-plugin:1.5.3.RELEASE:run (default-cli) @ projet.service.fonctionnel ---
+2017-12-19 12:18:30,642 main ERROR appenders contains an invalid element or attribute "Sentry"
+2017-12-19 12:18:30,672 main ERROR Unable to locate appender "Sentry" for logger config "org.springframework"
+2017-12-19 12:18:30,678 main ERROR Unable to locate appender "Sentry" for logger config "com.bootcamp"
 SLF4J: Class path contains multiple SLF4J bindings.
-<<<<<<< HEAD
-SLF4J: Found binding in [jar:file:/home/ibrahim/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: Found binding in [jar:file:/home/ibrahim/.m2/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/root/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/root/.m2/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
 SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
-=======
-SLF4J: Found binding in [jar:file:/home/iso-doss/env/maven/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: Found binding in [jar:file:/home/iso-doss/env/maven/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
-SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
-log4j:WARN No appenders could be found for logger (org.springframework.web.context.support.StandardServletEnvironment).
-log4j:WARN Please initialize the log4j system properly.
-log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
+2017-12-19 12:18:32,330 main ERROR appenders contains an invalid element or attribute "Sentry"
+2017-12-19 12:18:32,343 main ERROR Unable to locate appender "Sentry" for logger config "org.springframework"
+2017-12-19 12:18:32,349 main ERROR Unable to locate appender "Sentry" for logger config "com.bootcamp"
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -80,17 +45,103 @@ log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more in
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v1.5.8.RELEASE)
 
-<<<<<<< HEAD
-2017-12-11 08:11:13.913 WAT [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
-2017-12-11 08:11:18.615 WAT [main] o.a.c.c.StandardService INFO : Starting service [Tomcat]
-2017-12-11 08:11:18.617 WAT [main] o.a.c.c.StandardEngine INFO : Starting Servlet Engine: Apache Tomcat/8.5.23
-2017-12-11 08:11:18.767 WAT [localhost-startStop-1] o.a.c.c.C.[.[.[/projet] INFO : Initializing Spring embedded WebApplicationContext
-2017-12-11 08:11:25.067 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Context refreshed
-2017-12-11 08:11:25.133 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Found 1 custom documentation plugin(s)
-2017-12-11 08:11:25.174 WAT [main] s.d.s.w.s.ApiListingReferenceScanner INFO : Scanning for api listing references
-2017-12-11 08:11:26.217 WAT [main] o.a.c.h.Http11NioProtocol INFO : Initializing ProtocolHandler ["http-nio-8081"]
-2017-12-11 08:11:26.268 WAT [main] o.a.c.h.Http11NioProtocol INFO : Starting ProtocolHandler ["http-nio-8081"]
-2017-12-11 08:11:26.305 WAT [main] o.a.t.u.n.NioSelectorPool INFO : Using a shared selector for servlet write/read
-=======
-2017-12-11 13:05:43.388 WAT [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
+2017-12-19 12:18:34.646 WAT [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
+2017-12-19 12:18:47.415 WAT [main] o.a.c.c.StandardService INFO : Starting service [Tomcat]
+2017-12-19 12:18:47.422 WAT [main] o.a.c.c.StandardEngine INFO : Starting Servlet Engine: Apache Tomcat/8.5.23
+2017-12-19 12:18:47.884 WAT [localhost-startStop-1] o.a.c.c.C.[.[.[/projet] INFO : Initializing Spring embedded WebApplicationContext
+2017-12-19 12:19:02.510 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Context refreshed
+2017-12-19 12:19:02.714 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Found 1 custom documentation plugin(s)
+2017-12-19 12:19:02.784 WAT [main] s.d.s.w.s.ApiListingReferenceScanner INFO : Scanning for api listing references
+2017-12-19 12:19:05.224 WAT [main] o.a.c.h.Http11NioProtocol INFO : Initializing ProtocolHandler ["http-nio-8081"]
+2017-12-19 12:19:05.291 WAT [main] o.a.c.h.Http11NioProtocol INFO : Starting ProtocolHandler ["http-nio-8081"]
+2017-12-19 12:19:05.327 WAT [main] o.a.t.u.n.NioSelectorPool INFO : Using a shared selector for servlet write/read
+2017-12-19 12:26:45.932 WAT [http-nio-8081-exec-2] o.a.c.c.C.[.[.[/projet] INFO : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2017-12-19 12:26:46.667 WAT [http-nio-8081-exec-2] o.t.TemplateEngine INFO : [THYMELEAF] INITIALIZING TEMPLATE ENGINE
+2017-12-19 12:26:47.407 WAT [http-nio-8081-exec-2] o.t.t.AbstractTemplateResolver INFO : [THYMELEAF] INITIALIZING TEMPLATE RESOLVER: org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+2017-12-19 12:26:47.408 WAT [http-nio-8081-exec-2] o.t.t.AbstractTemplateResolver INFO : [THYMELEAF] TEMPLATE RESOLVER INITIALIZED OK
+2017-12-19 12:26:47.408 WAT [http-nio-8081-exec-2] o.t.m.AbstractMessageResolver INFO : [THYMELEAF] INITIALIZING MESSAGE RESOLVER: org.thymeleaf.spring4.messageresolver.SpringMessageResolver
+2017-12-19 12:26:47.408 WAT [http-nio-8081-exec-2] o.t.m.AbstractMessageResolver INFO : [THYMELEAF] MESSAGE RESOLVER INITIALIZED OK
+2017-12-19 12:26:47.452 WAT [http-nio-8081-exec-2] o.t.T.CONFIG INFO : [THYMELEAF] TEMPLATE ENGINE CONFIGURATION:
+[THYMELEAF] * Cache Factory implementation: org.thymeleaf.cache.StandardCacheManager
+[THYMELEAF] * Template modes:
+[THYMELEAF]     * VALIDXML
+[THYMELEAF]     * XHTML
+[THYMELEAF]     * VALIDXHTML
+[THYMELEAF]     * LEGACYHTML5
+[THYMELEAF]     * HTML5
+[THYMELEAF]     * XML
+[THYMELEAF] * Template resolvers (in order):
+[THYMELEAF]     * org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
+[THYMELEAF] * Message resolvers (in order):
+[THYMELEAF]     * org.thymeleaf.spring4.messageresolver.SpringMessageResolver
+[THYMELEAF] * Dialect: org.thymeleaf.spring4.dialect.SpringStandardDialect
+[THYMELEAF]     * Prefix: "th"
+[THYMELEAF] TEMPLATE ENGINE CONFIGURED OK
+2017-12-19 12:26:47.462 WAT [http-nio-8081-exec-2] o.t.TemplateEngine INFO : [THYMELEAF] TEMPLATE ENGINE INITIALIZED
+[EL Info]: 2017-12-19 12:27:08.52--ServerSession(151364968)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-12-19 12:27:13.129--ServerSession(151364968)--file:/Bootcamp/Clone/projet.service.fonctionnel/target/classes/_databasePU login successful
+[EL Info]: 2017-12-19 12:27:30.3--ServerSession(1115210748)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-12-19 12:27:30.606--ServerSession(1115210748)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU login successful
+2017-12-19 12:27:33.513 WAT [http-nio-8081-exec-4] o.a.c.c.C.[.[.[.[dispatcherServlet] ERROR: Servlet.service() for servlet [dispatcherServlet] in context with path [/projet] threw exception [Request processing failed; nested exception is java.lang.IndexOutOfBoundsException: Index: 0, Size: 0] with root cause
+java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
+	at java.util.ArrayList.rangeCheck(ArrayList.java:657)
+	at java.util.ArrayList.get(ArrayList.java:433)
+	at com.bootcamp.services.ProjetService.read(ProjetService.java:64)
+	at com.bootcamp.controllers.ProjetController.read(ProjetController.java:138)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:205)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:133)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:97)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:827)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:738)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:85)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:967)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:901)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:970)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:861)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:635)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:846)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:742)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.web.filter.ApplicationContextHeaderFilter.doFilterInternal(ApplicationContextHeaderFilter.java:55)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.trace.WebRequestTraceFilter.doFilterInternal(WebRequestTraceFilter.java:110)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.boot.actuate.autoconfigure.MetricsFilter.doFilterInternal(MetricsFilter.java:106)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:478)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:868)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+[EL Info]: connection: 2017-12-19 16:04:11.748--ServerSession(1115210748)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU logout successful
+[EL Info]: 2017-12-19 18:26:00.385--ServerSession(286679920)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-12-19 18:26:01.081--ServerSession(286679920)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU login successful

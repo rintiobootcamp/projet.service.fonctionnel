@@ -145,3 +145,4 @@ java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
 [EL Info]: connection: 2017-12-19 16:04:11.748--ServerSession(1115210748)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU logout successful
 [EL Info]: 2017-12-19 18:26:00.385--ServerSession(286679920)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
 [EL Info]: connection: 2017-12-19 18:26:01.081--ServerSession(286679920)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU login successful
+[EL Info]: connection: 2017-12-19 19:11:58.289--ServerSession(286679920)--file:/root/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU logout successful

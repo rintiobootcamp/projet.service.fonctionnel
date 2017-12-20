@@ -50,7 +50,7 @@ public class ProjetControllerIntegrationTest {
      *The Base URI of categorie fonctionnal service,
      * it can be change with the online URI of this service.
      */
-    private String BASE_URI = "http://localhost:8081/projet";
+    private String BASE_URI = "http://104.131.60.151/projet";
 
     /**
      * The path of the Projet controller, according to this controller implementation

@@ -1,10 +1,10 @@
 package com.bootcamp.controllers;
 
-
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
+import com.bootcamp.helpers.ProjetStatHelper;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -44,18 +45,17 @@ public class ProjetController {
     @Autowired
     HttpServletRequest request;
 
-
     /**
      * Insert the given project in the database
      *
      * @param projet
      * @return projet
+     * @throws java.sql.SQLException
      */
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
     public ResponseEntity<Projet> create(@RequestBody Projet projet) throws SQLException {
-
 
         HttpStatus httpStatus = null;
 
@@ -69,12 +69,35 @@ public class ProjetController {
     }
 
     /**
+     * Insert the given phase (step) in the database
+     *
+     * @param phase
+     * @return phase
+     * @throws java.sql.SQLException
+     */
+    @RequestMapping(method = RequestMethod.POST, value = "/phases")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Create a new project step", notes = "Create a new project step")
+    public ResponseEntity<Phase> createPhase(@RequestBody Phase phase) throws SQLException {
+
+        HttpStatus httpStatus = null;
+
+        try {
+            phase = projetService.createPhase(phase);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new ResponseEntity<>(phase, httpStatus);
+    }
+
+    /**
      * Get all the projects in the database
      *
      * @return projects list
      * @throws Exception
      */
-     @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
     public ResponseEntity<List<Projet>> findAll() throws Exception {
@@ -83,17 +106,33 @@ public class ProjetController {
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<List<Projet>>(projets, httpStatus);
     }
+    
+    /**
+     * Get all the phases (steps) in the database
+     *
+     * @return projects list
+     * @throws Exception
+     */
+    @RequestMapping(method = RequestMethod.GET, value="/phases")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Get list of phases", notes = "Get list of phases")
+    public ResponseEntity<List<Phase>> findAllPhases() throws Exception {
+        HttpStatus httpStatus = null;
+        List<Phase> phases = projetService.readAllPhases(request);
+        httpStatus = HttpStatus.OK;
+        return new ResponseEntity<>(phases, httpStatus);
+    }
 
     /**
      * Get a project by its id
      *
      * @param id
-     * @return
+     * @return project
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<Projet> read(@PathVariable int id) {
+    public ResponseEntity<Projet> read(@PathVariable("id") int id) {
 
         Projet projet = new Projet();
         HttpStatus httpStatus = null;
@@ -109,6 +148,30 @@ public class ProjetController {
         return new ResponseEntity<Projet>(projet, httpStatus);
     }
 
+    /**
+     * Get a phase (step) by its id
+     *
+     * @param id
+     * @return phase
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/phases/{id}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Read a phase", notes = "Read a phase")
+    public ResponseEntity<Phase> readPhase(@PathVariable("id") int id) {
+
+        Phase phase = new Phase();
+        HttpStatus httpStatus = null;
+
+        try {
+            phase = projetService.readPhase(id);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(phase, httpStatus);
+    }
 
     /**
      * Update the given project in the database
@@ -125,36 +188,91 @@ public class ProjetController {
         return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
-
-
-    //Bignon: cette methode met a jour la liste de phase actuelles
-    @RequestMapping(method = RequestMethod.PUT, value="/phasesActuelles")
+    /**
+     * Update the given phase (step) in the database
+     *
+     * @param phase
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/phases")
     @ApiVersions({"1.0"})
-    @ApiOperation(value = "Update a projet currents phases", notes = "update a projet currents phases")
-    public  ResponseEntity<List<Phase>> updatePhasesList(@RequestBody @Valid Projet projet, Phase phase ) throws Exception {
-
-        List<Phase> phasesActuelles =  projetService.setPhasesActuelles(projet,phase);
-        return new ResponseEntity<>(phasesActuelles, HttpStatus.OK);
+    @ApiOperation(value = "Update a phase", notes = "update a phase")
+    public ResponseEntity<Boolean> updatePhase(@RequestBody @Valid Phase phase) throws Exception {
+        boolean done = projetService.updatePhase(phase);
+        return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
+    /**
+     * Link the given phase (step) to the given project
+     *
+     * @param idPhase
+     * @param idProjet
+     * @return phase
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/phases/create/{idProjet}/{idPhase}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Add a phase to a projet", notes = "Add a phase to a projet")
+    public ResponseEntity<Phase> addPhase(@RequestParam("idProjet") int idProjet, @RequestParam("idPhase") int idPhase) throws Exception {
+        Phase phase = projetService.addPhase(idPhase, idProjet);
+        return new ResponseEntity<>(phase, HttpStatus.OK);
+    }
 
+    /**
+     * Undo the link between the given phase (step) to the given project
+     *
+     * @param idPhase
+     * @return phase
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/phases/delete/{idPhase}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Remove a phase from a projet", notes = "Remove a phase from a projet")
+    public ResponseEntity<Phase> removePhase(@RequestParam("idPhase") int idPhase) throws Exception {
+        Phase phase = projetService.removePhase(idPhase);
+        return new ResponseEntity<>(phase, HttpStatus.OK);
+    }
 
+//    //Bignon: cette methode met a jour la liste de phase actuelles
+//    @RequestMapping(method = RequestMethod.PUT, value = "/phasesActuelles")
+//    @ApiVersions({"1.0"})
+//    @ApiOperation(value = "Update a projet currents phases", notes = "update a projet currents phases")
+//    public ResponseEntity<List<Phase>> updatePhasesList(@RequestBody @Valid Projet projet, Phase phase) throws Exception {
+//
+//        List<Phase> phasesActuelles = projetService.setPhasesActuelles(projet, phase);
+//        return new ResponseEntity<>(phasesActuelles, HttpStatus.OK);
+//    }
     /**
      * Delete a project by its id
      *
-     *@param id
+     * @param id
      * @return
      * @throws Exception
-     * @throws IllegalAccessException
-     * @throws DatabaseException
-     * @throws InvocationTargetException
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete Projets", notes = "delete a particular Projets")
-    public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public ResponseEntity<Boolean> delete(@PathVariable("id") int id) throws Exception {
 
-       boolean done = projetService.delete(id);
+        boolean done = projetService.delete(id);
+        return new ResponseEntity<>(done, HttpStatus.OK);
+
+    }
+
+    /**
+     * Delete a phase by its id
+     *
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/phases/{id}", method = RequestMethod.DELETE)
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "delete the phases", notes = "delete a particular phases")
+    public ResponseEntity<Boolean> deletePhase(@PathVariable("id") int id) throws Exception {
+
+        boolean done = projetService.deletePhase(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
 
     }
@@ -172,29 +290,48 @@ public class ProjetController {
         HttpStatus httpStatus = null;
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
-        map.put( CommonsWsConstants.MAP_COUNT_KEY, count);
+        map.put(CommonsWsConstants.MAP_COUNT_KEY, count);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    //@Bignon
-    @RequestMapping(method = RequestMethod.GET, value = "/stat")
+    /**
+     * Get all the statistics relate to the given project
+     *
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/stats/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get statistics of a project", notes = "Get statistics of a project")
-    public ResponseEntity<List<HashMap<String, Object>>> statistics(int id) throws SQLException {
+    public ResponseEntity<ProjetStatHelper> statistics(@PathVariable("id") int id) throws SQLException {
         HttpStatus httpStatus = null;
-        Object obj = projetService.avancementPhase(id).toArray();
-        double taux = projetService.avancementBudget(id);
+        ProjetStatHelper projetStatHelper = new ProjetStatHelper();
 
-        List<HashMap<String, Object>> list = null;
-        HashMap<String, Object> map = null;
+        try {
+            double tauxBudget = projetService.avancementBudget(id);
+            double tauxFPrive = projetService.avancementFinancementPrive(id);
+            double tauxtFPublic = projetService.avancementFinancementPublic(id);
 
-        map.put("Taux budget", taux);
-        list.add(map);
-        map.put("temp par phase",obj);
-        list.add(map);
+            projetStatHelper = projetService.timeStatistics(id);
+            projetStatHelper.setTauxBuget(tauxBudget);
+            projetStatHelper.setTauxFinancementPrive(tauxFPrive);
+            projetStatHelper.setTauxFinancementPublic(tauxtFPublic);
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+
+
+        return new ResponseEntity(projetStatHelper,httpStatus);
     }
-
 
 }

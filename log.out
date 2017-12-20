@@ -1,76 +1,44 @@
-[INFO] Scanning for projects...
-[WARNING] 
-[WARNING] Some problems were encountered while building the effective model for com.bootcamp:projet.service.fonctionnel:war:1.0-SNAPSHOT
-<<<<<<< HEAD
-[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 207, column 21
-=======
-[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-compiler-plugin is missing. @ line 235, column 21
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
-[WARNING] 
-[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
-[WARNING] 
-[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
-[WARNING] 
-[INFO] 
-[INFO] ------------------------------------------------------------------------
-[INFO] Building projet.service.fonctionnel 1.0-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO] 
-[INFO] >>> spring-boot-maven-plugin:1.5.3.RELEASE:run (default-cli) > test-compile @ projet.service.fonctionnel >>>
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:resources (default-resources) @ projet.service.fonctionnel ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-<<<<<<< HEAD
-[INFO] skip non existing resourceDirectory /home/ibrahim/release4/projet.service.fonctionnel/src/main/resources
-[INFO] Copying 18 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ projet.service.fonctionnel ---
-[INFO] Nothing to compile - all classes are up to date
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ projet.service.fonctionnel ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] skip non existing resourceDirectory /home/ibrahim/release4/projet.service.fonctionnel/src/test/resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ projet.service.fonctionnel ---
-[INFO] Nothing to compile - all classes are up to date
-=======
-[INFO] skip non existing resourceDirectory /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/main/resources
-[INFO] Copying 18 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:compile (default-compile) @ projet.service.fonctionnel ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 8 source files to /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/target/classes
-[INFO] 
-[INFO] --- maven-resources-plugin:2.6:testResources (default-testResources) @ projet.service.fonctionnel ---
-[INFO] Using 'UTF-8' encoding to copy filtered resources.
-[INFO] Copying 4 resources
-[INFO] 
-[INFO] --- maven-compiler-plugin:3.1:testCompile (default-testCompile) @ projet.service.fonctionnel ---
-[INFO] Changes detected - recompiling the module!
-[INFO] Compiling 2 source files to /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/target/test-classes
-[WARNING] /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java: /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java uses unchecked or unsafe operations.
-[WARNING] /home/iso-doss/Bootcamp/Clone/projet.service.fonctionnel/src/test/java/com/bootcamp/service/ProjetServiceTest.java: Recompile with -Xlint:unchecked for details.
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
-[INFO] 
-[INFO] <<< spring-boot-maven-plugin:1.5.3.RELEASE:run (default-cli) < test-compile @ projet.service.fonctionnel <<<
-[INFO] 
-[INFO] 
-[INFO] --- spring-boot-maven-plugin:1.5.3.RELEASE:run (default-cli) @ projet.service.fonctionnel ---
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mBuilding projet.service.fonctionnel 1.0-SNAPSHOT[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:1.5.3.RELEASE:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mprojet.service.fonctionnel[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:resources[m [1m(default-resources)[m @ [36mprojet.service.fonctionnel[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] skip non existing resourceDirectory C:\BOOTCAMP\POPO\v1.0\bootcamp.scripts\scripts\projet.service.fonctionnel\src\main\resources
+[[1;34mINFO[m] Copying 20 resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.3:compile[m [1m(default-compile)[m @ [36mprojet.service.fonctionnel[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module!
+[[1;34mINFO[m] Compiling 10 source files to C:\BOOTCAMP\POPO\v1.0\bootcamp.scripts\scripts\projet.service.fonctionnel\target\classes
+[[1;34mINFO[m] /C:/BOOTCAMP/POPO/v1.0/bootcamp.scripts/scripts/projet.service.fonctionnel/src/main/java/com/bootcamp/controllers/ProjetController.java: C:\BOOTCAMP\POPO\v1.0\bootcamp.scripts\scripts\projet.service.fonctionnel\src\main\java\com\bootcamp\controllers\ProjetController.java uses unchecked or unsafe operations.
+[[1;34mINFO[m] /C:/BOOTCAMP/POPO/v1.0/bootcamp.scripts/scripts/projet.service.fonctionnel/src/main/java/com/bootcamp/controllers/ProjetController.java: Recompile with -Xlint:unchecked for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:2.6:testResources[m [1m(default-testResources)[m @ [36mprojet.service.fonctionnel[0;1m ---[m
+[[1;34mINFO[m] Using 'UTF-8' encoding to copy filtered resources.
+[[1;34mINFO[m] Copying 4 resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.3:testCompile[m [1m(default-testCompile)[m @ [36mprojet.service.fonctionnel[0;1m ---[m
+[[1;34mINFO[m] Changes detected - recompiling the module!
+[[1;34mINFO[m] Compiling 3 source files to C:\BOOTCAMP\POPO\v1.0\bootcamp.scripts\scripts\projet.service.fonctionnel\target\test-classes
+[[1;34mINFO[m] /C:/BOOTCAMP/POPO/v1.0/bootcamp.scripts/scripts/projet.service.fonctionnel/src/test/java/com/bootcamp/integration/ProjetControllerIntegrationTest.java: C:\BOOTCAMP\POPO\v1.0\bootcamp.scripts\scripts\projet.service.fonctionnel\src\test\java\com\bootcamp\integration\ProjetControllerIntegrationTest.java uses unchecked or unsafe operations.
+[[1;34mINFO[m] /C:/BOOTCAMP/POPO/v1.0/bootcamp.scripts/scripts/projet.service.fonctionnel/src/test/java/com/bootcamp/integration/ProjetControllerIntegrationTest.java: Recompile with -Xlint:unchecked for details.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:1.5.3.RELEASE:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mprojet.service.fonctionnel[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:1.5.3.RELEASE:run[m [1m(default-cli)[m @ [36mprojet.service.fonctionnel[0;1m ---[m
 SLF4J: Class path contains multiple SLF4J bindings.
-<<<<<<< HEAD
-SLF4J: Found binding in [jar:file:/home/ibrahim/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: Found binding in [jar:file:/home/ibrahim/.m2/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
-SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
-=======
-SLF4J: Found binding in [jar:file:/home/iso-doss/env/maven/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
-SLF4J: Found binding in [jar:file:/home/iso-doss/env/maven/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/C:/Users/G3A-GROUP/.m2/repository/org/slf4j/slf4j-log4j12/1.7.12/slf4j-log4j12-1.7.12.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/C:/Users/G3A-GROUP/.m2/repository/org/apache/logging/log4j/log4j-slf4j-impl/2.7/log4j-slf4j-impl-2.7.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
 SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
 log4j:WARN No appenders could be found for logger (org.springframework.web.context.support.StandardServletEnvironment).
 log4j:WARN Please initialize the log4j system properly.
 log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -80,17 +48,8 @@ log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more in
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v1.5.8.RELEASE)
 
-<<<<<<< HEAD
-2017-12-11 08:11:13.913 WAT [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
-2017-12-11 08:11:18.615 WAT [main] o.a.c.c.StandardService INFO : Starting service [Tomcat]
-2017-12-11 08:11:18.617 WAT [main] o.a.c.c.StandardEngine INFO : Starting Servlet Engine: Apache Tomcat/8.5.23
-2017-12-11 08:11:18.767 WAT [localhost-startStop-1] o.a.c.c.C.[.[.[/projet] INFO : Initializing Spring embedded WebApplicationContext
-2017-12-11 08:11:25.067 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Context refreshed
-2017-12-11 08:11:25.133 WAT [main] s.d.s.w.p.DocumentationPluginsBootstrapper INFO : Found 1 custom documentation plugin(s)
-2017-12-11 08:11:25.174 WAT [main] s.d.s.w.s.ApiListingReferenceScanner INFO : Scanning for api listing references
-2017-12-11 08:11:26.217 WAT [main] o.a.c.h.Http11NioProtocol INFO : Initializing ProtocolHandler ["http-nio-8081"]
-2017-12-11 08:11:26.268 WAT [main] o.a.c.h.Http11NioProtocol INFO : Starting ProtocolHandler ["http-nio-8081"]
-2017-12-11 08:11:26.305 WAT [main] o.a.t.u.n.NioSelectorPool INFO : Using a shared selector for servlet write/read
-=======
-2017-12-11 13:05:43.388 WAT [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
->>>>>>> 4f833ac04d529b0f79a8ee2d7faa7dc45d9318fd
+[32m2017-12-20 14:11:47.592 CET [background-preinit] o.h.v.i.u.Version INFO : HV000001: Hibernate Validator 5.3.5.Final
+[m[EL Info]: 2017-12-20 14:12:50.751--ServerSession(1579472884)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-12-20 14:12:51.138--ServerSession(1579472884)--file:/C:/BOOTCAMP/POPO/v1.0/bootcamp.scripts/scripts/projet.service.fonctionnel/target/classes/_databasePU login successful
+[EL Info]: 2017-12-20 14:12:52.369--ServerSession(608358212)--EclipseLink, version: Eclipse Persistence Services - 2.5.2.v20140319-9ad6abd
+[EL Info]: connection: 2017-12-20 14:12:52.417--ServerSession(608358212)--file:/C:/Users/G3A-GROUP/.m2/repository/com/bootcamp/db-access/1.0-SNAPSHOT/db-access-1.0-SNAPSHOT.jar_databasePU login successful

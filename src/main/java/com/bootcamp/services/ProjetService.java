@@ -192,8 +192,8 @@ public class ProjetService implements DatabaseConstants {
         return projets;
 
     }
-    
-        /**
+
+    /**
      * Get all the phases of the database matching the request
      *
      * @param request

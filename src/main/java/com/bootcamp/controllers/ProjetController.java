@@ -1,8 +1,10 @@
 package com.bootcamp.controllers;
 
+import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
+import com.bootcamp.helpers.ProjetStatHelper;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -298,23 +301,37 @@ public class ProjetController {
      * @return
      * @throws SQLException
      */
-    @RequestMapping(method = RequestMethod.GET, value = "/stat/{id}")
+    @RequestMapping(method = RequestMethod.GET, value = "/stats/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get statistics of a project", notes = "Get statistics of a project")
-    public ResponseEntity<List<HashMap<String, Object>>> statistics(@PathVariable("id") int id) throws SQLException {
+    public ResponseEntity<ProjetStatHelper> statistics(@PathVariable("id") int id) throws SQLException {
         HttpStatus httpStatus = null;
-        Object obj = projetService.avancementPhase(id).toArray();
-        double taux = projetService.avancementBudget(id);
+        ProjetStatHelper projetStatHelper = new ProjetStatHelper();
 
-        List<HashMap<String, Object>> list = null;
-        HashMap<String, Object> map = null;
+        try {
+            double tauxBudget = projetService.avancementBudget(id);
+            double tauxFPrive = projetService.avancementFinancementPrive(id);
+            double tauxtFPublic = projetService.avancementFinancementPublic(id);
 
-        map.put("Taux budget", taux);
-        list.add(map);
-        map.put("temp par phase", obj);
-        list.add(map);
+            projetStatHelper = projetService.timeStatistics(id);
+            projetStatHelper.setTauxBuget(tauxBudget);
+            projetStatHelper.setTauxFinancementPrive(tauxFPrive);
+            projetStatHelper.setTauxFinancementPublic(tauxtFPublic);
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+            httpStatus = HttpStatus.OK;
+        } catch (SQLException ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (DatabaseException e) {
+            e.printStackTrace();
+        }
+
+
+        return new ResponseEntity(projetStatHelper,httpStatus);
     }
 
 }

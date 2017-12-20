@@ -1,15 +1,19 @@
 package com.bootcamp.services;
 
 import com.bootcamp.commons.constants.DatabaseConstants;
+import com.bootcamp.commons.enums.EtatProjet;
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.models.Criteria;
 import com.bootcamp.commons.models.Criterias;
+import com.bootcamp.commons.models.Rule;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
 import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 
+import com.bootcamp.helpers.PhaseStatHelper;
+import com.bootcamp.helpers.ProjetStatHelper;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -234,128 +238,111 @@ public class ProjetService implements DatabaseConstants {
     /**
      * Get the given project actual phases
      *
-     * @param projet
+     * @param idProjet
      * @return phases list
      */
-    public List<Phase> getPhasesActuelles(Projet projet) {
-        List<Phase> phasesActuelles = new ArrayList<>();
+    public List<Phase> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
 
-        for (Phase phase : projet.getPhases()) {
-            if (phase.isActif()) {
-                phasesActuelles.add(phase);
-            }
+        Criterias criterias = new Criterias();
+//        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
+        criterias.addCriteria(new Criteria(new Rule("actif","=",true),null));
+
+        List<Phase> phases = PhaseCRUD.read(criterias);
+        List<Phase> phasesActuelles = new ArrayList<>();
+            phasesActuelles.clear();
+        for (Phase phase : phases) {
+         if(phase.getProjet().getId() == idProjet){
+            phasesActuelles.add(phase);
+         }
+             
         }
+//
+//    List<Phase> phases = PhaseCRUD.read();
+//    List<Phase> phaseActuelles = null;
+//        for (Phase phase : phases) {
+//            if(phase.getProjet().getId() == idProjet && phase.isActif())
+//                phaseActuelles.add(phase);
+//        }
+
+
         return phasesActuelles;
     }
 
-    /**
-     * Get a project knowing its name
-     *
-     * @param nom
-     * @return phases list
-     * @throws java.sql.SQLException
-     */
-    public Projet getByName(String nom) throws SQLException {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("nom", "=", nom));
-        List<Projet> projets = ProjetCRUD.read(criterias);
-        return projets.get(0);
+    //@Bignon: Activate or desactivate phase
+    public void activateOrDesactivatePhase (int idPhase) throws Exception {
+        Phase phase = readPhase(idPhase);
+        if (phase.isActif())
+            phase.setActif(false);
+        else
+            phase.setActif(true);
     }
 
-    //Bignon cette methode n'a pas de raison d'etre
-//    public List<Phase>  getPhasesActuelles (Projet projet){
-//        List<Phase> phasesActuelles = new ArrayList<>();
-//
-//        for (Phase phase : projet.getPhases()){
-//            if(phase.isActif()){
-//                phasesActuelles.add( phase);
-//            }
-//        }
-//        return phasesActuelles;
-//    }
-//    //@Bignon: met a jour la liste de phase actuelles
-//    public List<Phase> setPhasesActuelles(Projet projet, Phase phase) throws Exception {
-//        projet.getPhasesActuelles().add(phase);
-//        this.update(projet);
-//
-//        List<Phase> phasesActuelles = projet.getPhasesActuelles();
-//
-//        return phasesActuelles;
-//    }
+
     //@Bignon : calcul du taux d'avancement par budget d'un projet
     public double avancementBudget(int id) throws SQLException {
         Projet projet = read(id);
-        double taux = (projet.getBudgetPrevisionnel() / projet.getCoutReel());
+        double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel())*100;
 
         return taux;
     }
 
-    /**
-     * Check if the given project exist in the database
-     *
-     * @param projet
-     * @return
-     * @throws Exception
-     */
-    public boolean exist(Projet projet) throws Exception {
-        if (getByName(projet.getNom()) != null) {
-            return true;
-        }
-        return false;
-    }
-
-    // @bignon : calcul selon les cas le temp en gain ou en perte d'un projet par rapport a ses phases actuelles
-    public List<HashMap<Phase, List<HashMap<String, Long>>>> avancementPhase(int id) throws SQLException {
-        List<HashMap<Phase, List<HashMap<String, Long>>>> toreturn = null;
-
+    //@Bignon: calcul du taux de financement Prive
+    public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = read(id);
-        List<Phase> phaseActuelles = projet.getPhasesActuelles();
+        double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel())*100;
 
-        for (int i = 0; i < phaseActuelles.size(); i++) {
-            HashMap<Phase, List<HashMap<String, Long>>> toadd = null;
-            List<HashMap<String, Long>> maps = null;
-            HashMap<String, Long> mapDebut = null;
-            HashMap<String, Long> mapFin = null;
-
-            if (projet.getDateDebutPrevisionnel() <= System.currentTimeMillis()) {
-                long md = Math.subtractExact(projet.getDateDebutPrevisionnel(), phaseActuelles.get(i).getDateDebut());
-
-                if (md >= 0) {
-                    mapDebut.put("Gain de temp de commencement :", md);
-                    maps.add(mapDebut);
-                    toadd.put(phaseActuelles.get(i), maps);
-                } else {
-                    mapDebut.put("Temp de retard commencement:", md);
-                    maps.add(mapDebut);
-                    toadd.put(phaseActuelles.get(i), maps);
-                }
-
-                long mf = Math.subtractExact(projet.getDateFinPrevisionnel(), phaseActuelles.get(i).getDateFin());
-
-                if (mf >= 0) {
-                    mapFin.put("Gain de temp de fin :", mf);
-                    maps.add(mapFin);
-                    toadd.put(phaseActuelles.get(i), maps);
-                } else {
-                    mapFin.put("Temp de retard fin :", mf);
-                    maps.add(mapFin);
-                    toadd.put(phaseActuelles.get(i), maps);
-                }
-
-            }
-            toreturn.add(toadd);
-
-        }
-
-        return toreturn;
+        return taux;
     }
 
-    //@Bignon: A supprimer car ce control est deja ajoute par moi dans la methode precedente
-//    public boolean exist(Projet projet) throws Exception{
-//        if(getByName(projet.getNom())!=null)
-//            return true;
-//        return false;
-//    }
+    //@bignon: calcul du taux de financement Public
+    public double avancementFinancementPublic(int id) throws SQLException {
+        Projet projet = read(id);
+        double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel())*100;
+
+        return taux;
+    }
+     //@bignon: temp de retard ou d'avancement de la phase
+     public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
+         
+         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
+
+         List<Phase> phasesActuelles = getPhasesActuelles(id);
+         phasesActuelles.add(readPhase(1));
+         
+         for (int i = 0; i < phasesActuelles.size(); i++) {
+             PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
+             Phase phaseActuelle = phasesActuelles.get(i);
+            long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(),phaseActuelle.getDateDebutReel());
+             long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(),phaseActuelle.getDateFinReel());
+
+             phaseStatHelper.setIdPhase(phaseActuelle.getId());
+             phaseStatHelper.setNomPhase(phaseActuelle.getNom());
+
+             if (tpD >= 0)
+             phaseStatHelper.setTempAvanceDateDebut(tpD);
+             else
+             phaseStatHelper.setTempRetardDateDebut(-tpD);
+
+             if (tpF >= 0)
+                 phaseStatHelper.setTempAvanceDateFin(tpF);
+             else
+                 phaseStatHelper.setTempRetardDateDebutFin(-tpF);
+
+             phaseStatHelpers.add(phaseStatHelper);
+
+         }
+         projetStatHelper.setPhaseStatHelperList(phaseStatHelpers);
+         return projetStatHelper;
+     }
+
+     public void changeProjectstate(int idProjet, EtatProjet etatProjet) throws Exception {
+        Projet projet =read(idProjet);
+         projet.setEtat(etatProjet);
+
+         update(projet);
+     }
+
     // @Bignon cette methode me semble inutile
     public boolean exist(int id) throws Exception {
         if (read(id) != null) {

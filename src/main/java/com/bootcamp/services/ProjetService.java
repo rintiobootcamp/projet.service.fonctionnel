@@ -244,13 +244,28 @@ public class ProjetService implements DatabaseConstants {
     public List<Phase> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
 
         Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria(new Rule("projet","=",idProjet),"AND"));
+//        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
         criterias.addCriteria(new Criteria(new Rule("actif","=",true),null));
 
-        List<Phase> phaseActuelles = PhaseCRUD.read(criterias);
+        List<Phase> phases = PhaseCRUD.read(criterias);
+        List<Phase> phasesActuelles = new ArrayList<>();
+            phasesActuelles.clear();
+        for (Phase phase : phases) {
+         if(phase.getProjet().getId() == idProjet){
+            phasesActuelles.add(phase);
+         }
+             
+        }
+//
+//    List<Phase> phases = PhaseCRUD.read();
+//    List<Phase> phaseActuelles = null;
+//        for (Phase phase : phases) {
+//            if(phase.getProjet().getId() == idProjet && phase.isActif())
+//                phaseActuelles.add(phase);
+//        }
 
 
-        return phaseActuelles;
+        return phasesActuelles;
     }
 
     //@Bignon: Activate or desactivate phase
@@ -289,12 +304,14 @@ public class ProjetService implements DatabaseConstants {
      //@bignon: temp de retard ou d'avancement de la phase
      public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
          ProjetStatHelper projetStatHelper = new ProjetStatHelper();
-         List<PhaseStatHelper> phaseStatHelpers = null;
+         
+         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
 
          List<Phase> phasesActuelles = getPhasesActuelles(id);
          phasesActuelles.add(readPhase(1));
+         
          for (int i = 0; i < phasesActuelles.size(); i++) {
-             PhaseStatHelper phaseStatHelper = null;
+             PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
              Phase phaseActuelle = phasesActuelles.get(i);
             long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(),phaseActuelle.getDateDebutReel());
              long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(),phaseActuelle.getDateFinReel());
@@ -305,12 +322,12 @@ public class ProjetService implements DatabaseConstants {
              if (tpD >= 0)
              phaseStatHelper.setTempAvanceDateDebut(tpD);
              else
-             phaseStatHelper.setTempRetardDateDebut(tpD);
+             phaseStatHelper.setTempRetardDateDebut(-tpD);
 
              if (tpF >= 0)
                  phaseStatHelper.setTempAvanceDateFin(tpF);
              else
-                 phaseStatHelper.setTempRetardDateDebutFin(tpF);
+                 phaseStatHelper.setTempRetardDateDebutFin(-tpF);
 
              phaseStatHelpers.add(phaseStatHelper);
 

@@ -293,13 +293,13 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@Bignon: Activate or desactivate phase
-    public void activateOrDesactivatePhase(int idPhase) throws Exception {
+    public void activateOrDesactivatePhase(int idPhase) throws SQLException {
         Phase phase = readPhase(idPhase);
         if (phase.isActif()) {
             phase.setActif(false);
         } else {
             phase.setActif(true);
-            
+
             NotificationInput input = new NotificationInput();
             input.setAction(Action.UPDATE_PROJECT_PHASE);
             input.setEntityId(phase.getProjet().getId());
@@ -324,7 +324,6 @@ public class ProjetService implements DatabaseConstants {
         return taux;
     }
 
-    //@Bignon: calcul du taux de financement Prive
     public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = read(id);
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;

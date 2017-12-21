@@ -1,10 +1,7 @@
 package com.bootcamp.integration;
 
 import com.bootcamp.commons.utils.GsonUtils;
-import com.bootcamp.entities.Axe;
-import com.bootcamp.entities.Pilier;
-import com.bootcamp.entities.Projet;
-import com.bootcamp.entities.Secteur;
+import com.bootcamp.entities.*;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.Gson;
@@ -57,6 +54,9 @@ public class ProjetControllerIntegrationTest {
      */
     private String PROJET_PATH ="/projets";
 
+    private String PHASE_PATH ="/phases";
+
+
     /**
      * This ID is initialize for create , getById, and update method,
      * you have to change it if you have a save data on this ID otherwise
@@ -64,6 +64,7 @@ public class ProjetControllerIntegrationTest {
      */
     private int projetId = 0;
 
+    private int phaseId = 0;
 
     /**
      * This method create a new projet with the given id
@@ -93,12 +94,28 @@ public class ProjetControllerIntegrationTest {
                 .expect()
                 .when()
                 .post(createURI);
-
         projetId = gson.fromJson( response.getBody().print(),Projet.class ).getId();
-
-
         logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
 
+    }
+
+
+    @Test(priority = 1, groups = {"PhaseTest"})
+    public void createPhaseTest() throws Exception{
+        String createURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        Phase phase = loadDataPhaseFromJsonFile().get( 1 );
+        Gson gson = new Gson();
+        String phaseData = gson.toJson( phase );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body(phaseData)
+                .expect()
+                .when()
+                .post(createURI);
+        phaseId = gson.fromJson( response.getBody().print(),Phase.class ).getId();
+        logger.debug(response.getBody().prettyPrint());
         Assert.assertEquals(response.statusCode(), 200) ;
 
 
@@ -116,7 +133,7 @@ public class ProjetControllerIntegrationTest {
      * @throws Exception
      */
 
-    @Test(priority = 1, groups = {"ProjetTest"})
+    @Test(priority = 2, groups = {"ProjetTest"})
     public void getProjetByIdTest() throws Exception{
 
         String getProjetById = BASE_URI+PROJET_PATH+"/"+projetId;
@@ -136,6 +153,29 @@ public class ProjetControllerIntegrationTest {
     }
 
     /**
+     * This method get a projet with the given id
+     * @see Projet#id
+     * <b>
+     *     If the given ID doesn't exist it will log an error
+     * </b>
+     * Note that this method will be the second to execute
+     * If every done , it will return a 200 httpStatus code
+     * @throws Exception
+     */
+
+    @Test(priority = 3, groups = {"PhaseTest"})
+    public void getPhaseByIdTest() throws Exception{
+        String getPhaseById = BASE_URI+PROJET_PATH+PHASE_PATH+"/"+phaseId;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .get(getPhaseById);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+    /**
      * Update a projet with the given ID
      * <b>
      *     the projet must exist in the database
@@ -145,7 +185,7 @@ public class ProjetControllerIntegrationTest {
      * @throws Exception
      */
 
-    @Test(priority = 2, groups = {"ProjetTest"})
+    @Test(priority = 4, groups = {"ProjetTest"})
     public void updateProjetTest() throws Exception{
         String updateURI = BASE_URI+PROJET_PATH;
         Projet projet = getProjetById( 1 );
@@ -171,12 +211,70 @@ public class ProjetControllerIntegrationTest {
 
     }
 
+
+    @Test(priority = 5, groups = {"PhaseTest"})
+    public void updatePhaseTest() throws Exception{
+        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        Phase phase = loadDataPhaseFromJsonFile().get( 1 );
+        phase.setId( phaseId );
+        phase.setNom( "update after doc impl integration" );
+        Gson gson = new Gson();
+        String phaseData = gson.toJson( phase );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body(phaseData)
+                .expect()
+                .when()
+                .put(updateURI);
+
+        logger.debug(response.getBody().prettyPrint());
+
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+    }
+
+    @Test(priority = 6, groups = {"PhaseTest"})
+    public void addPhaseToProjetTest() throws Exception{
+        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH+"/create/"+projetId+"/"+phaseId;
+        Phase phase = loadDataPhaseFromJsonFile().get( 1 );
+        phase.setId( phaseId );
+        Gson gson = new Gson();
+        String phaseData = gson.toJson( phase );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body(phaseData)
+                .expect()
+                .when()
+                .put(updateURI);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+
+    @Test(priority = 7, groups = {"PhaseTest"})
+    public void removeProjetFromPhaseTest() throws Exception{
+        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH+"/delete/"+phaseId;
+        Phase phase = loadDataPhaseFromJsonFile().get( 1 );
+        phase.setId( phaseId );
+        Gson gson = new Gson();
+        String phaseData = gson.toJson( phase );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .put(updateURI);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+
     /**
      * Get All the projets in the database
      * If every done , it will return a 200 httpStatus code
      * @throws Exception
      */
-    @Test(priority = 3, groups = {"ProjetTest"})
+    @Test(priority = 8, groups = {"ProjetTest"})
     public void getAllProjetsTest()throws Exception{
         String getAllProjetURI = BASE_URI+PROJET_PATH;
         Response response = given()
@@ -192,28 +290,88 @@ public class ProjetControllerIntegrationTest {
 
     }
 
+    /**
+     * Get All the phases in the database
+     * If every done , it will return a 200 httpStatus code
+     * @throws Exception
+     */
+    @Test(priority = 9, groups = {"PhaseTest"})
+    public void getAllPhasesTest()throws Exception{
+        String getAllPhaseURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .get(getAllPhaseURI);
+
+        logger.debug(response.getBody().prettyPrint());
+
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+    }
 
     /**
      * Delete a projet for the given ID
      * will return a 200 httpStatus code if OK
      * @throws Exception
      */
-    @Test(priority = 4, groups = {"ProjetTest"})
+    @Test(priority = 10, groups = {"ProjetTest"})
+    public void getProjetStatisticTest() throws Exception{
+        String getStatProjetUI = BASE_URI+PROJET_PATH+"/stats/"+projetId;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .get(getStatProjetUI);
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+
+
+
+    /**
+     * Delete a projet for the given ID
+     * will return a 200 httpStatus code if OK
+     * @throws Exception
+     */
+    @Test(priority = 11, groups = {"ProjetTest"})
     public void deleteProjetTest() throws Exception{
-
         String deleteProjetUI = BASE_URI+PROJET_PATH+"/"+projetId;
-
         Response response = given()
                 .log().all()
                 .contentType("application/json")
                 .expect()
                 .when()
                 .delete(deleteProjetUI);
-
         Assert.assertEquals(response.statusCode(), 200) ;
-
-
     }
+
+
+    /**
+     * Delete a phase for the given ID
+     * will return a 200 httpStatus code if OK
+     * @throws Exception
+     */
+    @Test(priority = 12, groups = {"ProjetTest"})
+    public void deletePhaseTest() throws Exception{
+        String deletePhaseUI = BASE_URI+PROJET_PATH+PHASE_PATH+"/"+phaseId;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .delete(deletePhaseUI);
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+
+
+
+    private int getLastPhasetId(List<Phase> list) throws Exception {
+        Phase input = list.get( list.size() - 1 );
+        return input.getId();
+    }
+
 
     /**
      * Convert a relative path file into a File Object type
@@ -230,6 +388,20 @@ public class ProjetControllerIntegrationTest {
         }
 
         return file;
+    }
+
+
+    public List<Phase> loadDataPhaseFromJsonFile() throws Exception {
+        //TestUtils testUtils = new TestUtils();
+        File dataFile = getFile("data-json" + File.separator + "phases.json");
+
+        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
+
+        Type typeOfObjectsListNew = new TypeToken<List<Phase>>() {
+        }.getType();
+        List<Phase> phases = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
+
+        return phases;
     }
 
     /**

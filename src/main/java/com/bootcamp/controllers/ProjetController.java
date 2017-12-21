@@ -79,16 +79,8 @@ public class ProjetController {
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project step", notes = "Create a new project step")
     public ResponseEntity<Phase> createPhase(@RequestBody Phase phase) throws SQLException {
-
-        HttpStatus httpStatus = null;
-
-        try {
-            phase = projetService.createPhase(phase);
-            httpStatus = HttpStatus.OK;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new ResponseEntity<>(phase, httpStatus);
+       Phase result = projetService.createPhase( phase );
+       return new ResponseEntity<>( result,HttpStatus.OK );
     }
 
     /**
@@ -214,7 +206,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.PUT, value = "/phases/create/{idProjet}/{idPhase}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Add a phase to a projet", notes = "Add a phase to a projet")
-    public ResponseEntity<Phase> addPhase(@RequestParam("idProjet") int idProjet, @RequestParam("idPhase") int idPhase) throws Exception {
+    public ResponseEntity<Phase> addPhaseToProject(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
         Phase phase = projetService.addPhase(idPhase, idProjet);
         return new ResponseEntity<>(phase, HttpStatus.OK);
     }
@@ -229,7 +221,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.PUT, value = "/phases/delete/{idPhase}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Remove a phase from a projet", notes = "Remove a phase from a projet")
-    public ResponseEntity<Phase> removePhase(@RequestParam("idPhase") int idPhase) throws Exception {
+    public ResponseEntity<Phase> removeProjetFromPhase(@PathVariable("idPhase") int idPhase) throws Exception {
         Phase phase = projetService.removePhase(idPhase);
         return new ResponseEntity<>(phase, HttpStatus.OK);
     }
@@ -271,10 +263,8 @@ public class ProjetController {
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete the phases", notes = "delete a particular phases")
     public ResponseEntity<Boolean> deletePhase(@PathVariable("id") int id) throws Exception {
-
         boolean done = projetService.deletePhase(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
-
     }
 
     /**

@@ -51,8 +51,8 @@ public class ProjetService implements DatabaseConstants {
      * @throws SQLException
      */
     public Phase createPhase(Phase phase) throws SQLException {
-        PhaseCRUD.create(phase);
-        return phase;
+         PhaseCRUD.create(phase);
+         return phase;
     }
 
     /**
@@ -268,7 +268,6 @@ public class ProjetService implements DatabaseConstants {
         return phasesActuelles;
     }
 
-    //@Bignon: Activate or desactivate phase
     public void activateOrDesactivatePhase (int idPhase) throws Exception {
         Phase phase = readPhase(idPhase);
         if (phase.isActif())
@@ -278,7 +277,6 @@ public class ProjetService implements DatabaseConstants {
     }
 
 
-    //@Bignon : calcul du taux d'avancement par budget d'un projet
     public double avancementBudget(int id) throws SQLException {
         Projet projet = read(id);
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel())*100;
@@ -286,7 +284,6 @@ public class ProjetService implements DatabaseConstants {
         return taux;
     }
 
-    //@Bignon: calcul du taux de financement Prive
     public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = read(id);
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel())*100;

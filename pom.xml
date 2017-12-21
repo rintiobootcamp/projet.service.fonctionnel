@@ -13,8 +13,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <!--<config.home>/home/config/dev</config.home>-->
-        <config.home>C:\config\dev</config.home>
+        <config.home>/home/config/dev</config.home>
+        <!--<config.home>C:\config\dev</config.home>-->
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.testng/testng -->
@@ -217,7 +217,7 @@
             <scope>test</scope>
         </dependency>
 
-
+<!--
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
@@ -230,7 +230,7 @@
             <artifactId>spring-mock-mvc</artifactId>
             <version>3.0.6</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
 
     </dependencies>

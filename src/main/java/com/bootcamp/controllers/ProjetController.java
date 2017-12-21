@@ -1,5 +1,6 @@
 package com.bootcamp.controllers;
 
+import com.bootcamp.commons.enums.EtatProjet;
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Phase;
@@ -106,14 +107,14 @@ public class ProjetController {
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<List<Projet>>(projets, httpStatus);
     }
-    
+
     /**
      * Get all the phases (steps) in the database
      *
      * @return projects list
      * @throws Exception
      */
-    @RequestMapping(method = RequestMethod.GET, value="/phases")
+    @RequestMapping(method = RequestMethod.GET, value = "/phases")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of phases", notes = "Get list of phases")
     public ResponseEntity<List<Phase>> findAllPhases() throws Exception {
@@ -330,8 +331,59 @@ public class ProjetController {
             e.printStackTrace();
         }
 
+        return new ResponseEntity(projetStatHelper, httpStatus);
+    }
 
-        return new ResponseEntity(projetStatHelper,httpStatus);
+    /**
+     * Update the state of the given project
+     *
+     * @param idProjet
+     * @param etat
+     * @return
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/etats/{idProjet}/{etat}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Change the state of the project", notes = "Change the state of the project")
+    public ResponseEntity<Void> setEtat(@PathVariable("idProjet") int idProjet, @PathVariable("etat") String etat) throws SQLException {
+        HttpStatus httpStatus = null;
+        
+        EtatProjet etatProjet = EtatProjet.valueOf(etat);
+
+        try{
+            projetService.changeProjectstate(idProjet, etatProjet);
+            httpStatus = HttpStatus.OK;
+        } catch (Exception ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(httpStatus);
+    }
+    
+        /**
+     * Enable or disable the given phase (step)
+     *
+     * @param idPhase
+     * @param bool
+     * @return
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.PUT, value = "/phases/enable/{idPhase}")
+    @ApiVersions({"1.0"})
+    @ApiOperation(value = "Enable or disable the given phase", notes = "Enable or disable the given phase")
+    public ResponseEntity<Void> activerPhase(@PathVariable("idPhase") int idPhase) throws SQLException {
+        HttpStatus httpStatus = null;
+        
+        try{
+            projetService.activateOrDesactivatePhase(idPhase);
+            httpStatus = HttpStatus.OK;
+        } catch (Exception ex) {
+            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(httpStatus);
     }
 
 }

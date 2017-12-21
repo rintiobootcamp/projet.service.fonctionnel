@@ -1,11 +1,14 @@
 package com.bootcamp.services;
 
+import com.bootcamp.client.NotificationClient;
 import com.bootcamp.commons.constants.DatabaseConstants;
+import com.bootcamp.commons.enums.Action;
 import com.bootcamp.commons.enums.EtatProjet;
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.models.Criteria;
 import com.bootcamp.commons.models.Criterias;
 import com.bootcamp.commons.models.Rule;
+import com.bootcamp.commons.ws.usecases.pivotone.NotificationInput;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
@@ -14,22 +17,33 @@ import com.bootcamp.entities.Projet;
 
 import com.bootcamp.helpers.PhaseStatHelper;
 import com.bootcamp.helpers.ProjetStatHelper;
+import java.io.IOException;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 
 /**
  * Created by darextossa on 11/27/17.
  */
 @Component
 public class ProjetService implements DatabaseConstants {
+
+    NotificationClient client;
+
+    /**
+     * Loading Projet Web Service client
+     */
+    @PostConstruct
+    public void init() {
+        client = new NotificationClient();
+    }
 
     /**
      * Insert the given project in the database
@@ -40,6 +54,17 @@ public class ProjetService implements DatabaseConstants {
      */
     public Projet create(Projet projet) throws SQLException {
         ProjetCRUD.create(projet);
+        NotificationInput input = new NotificationInput();
+        input.setAction(Action.NEW_PROJECT);
+        input.setEntityId(projet.getId());
+        input.setEntityType("PROJET");
+        input.setTitre(projet.getNom());
+
+        try {
+            client.sendNotification(input);
+        } catch (IOException ex) {
+            Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return projet;
     }
 
@@ -245,16 +270,16 @@ public class ProjetService implements DatabaseConstants {
 
         Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
-        criterias.addCriteria(new Criteria(new Rule("actif","=",true),null));
+        criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
 
         List<Phase> phases = PhaseCRUD.read(criterias);
         List<Phase> phasesActuelles = new ArrayList<>();
-            phasesActuelles.clear();
+        phasesActuelles.clear();
         for (Phase phase : phases) {
-         if(phase.getProjet().getId() == idProjet){
-            phasesActuelles.add(phase);
-         }
-             
+            if (phase.getProjet().getId() == idProjet) {
+                phasesActuelles.add(phase);
+            }
+
         }
 //
 //    List<Phase> phases = PhaseCRUD.read();
@@ -264,24 +289,37 @@ public class ProjetService implements DatabaseConstants {
 //                phaseActuelles.add(phase);
 //        }
 
-
         return phasesActuelles;
     }
 
     //@Bignon: Activate or desactivate phase
-    public void activateOrDesactivatePhase (int idPhase) throws Exception {
+    public void activateOrDesactivatePhase(int idPhase) throws Exception {
         Phase phase = readPhase(idPhase);
-        if (phase.isActif())
+        if (phase.isActif()) {
             phase.setActif(false);
-        else
+        } else {
             phase.setActif(true);
-    }
+            
+            NotificationInput input = new NotificationInput();
+            input.setAction(Action.UPDATE_PROJECT_PHASE);
+            input.setEntityId(phase.getProjet().getId());
+            input.setEntityType("PROJET");
+            input.setTitre(phase.getProjet().getNom());
+            input.setAttributName("phase");
+            input.setCurrentVersion(phase.getNom());
 
+            try {
+                client.sendNotification(input);
+            } catch (IOException ex) {
+                Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
     //@Bignon : calcul du taux d'avancement par budget d'un projet
     public double avancementBudget(int id) throws SQLException {
         Projet projet = read(id);
-        double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel())*100;
+        double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
 
         return taux;
     }
@@ -289,7 +327,7 @@ public class ProjetService implements DatabaseConstants {
     //@Bignon: calcul du taux de financement Prive
     public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = read(id);
-        double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel())*100;
+        double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;
 
         return taux;
     }
@@ -297,51 +335,69 @@ public class ProjetService implements DatabaseConstants {
     //@bignon: calcul du taux de financement Public
     public double avancementFinancementPublic(int id) throws SQLException {
         Projet projet = read(id);
-        double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel())*100;
+        double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel()) * 100;
 
         return taux;
     }
-     //@bignon: temp de retard ou d'avancement de la phase
-     public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
-         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
-         
-         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
+    //@bignon: temp de retard ou d'avancement de la phase
 
-         List<Phase> phasesActuelles = getPhasesActuelles(id);
-         phasesActuelles.add(readPhase(1));
-         
-         for (int i = 0; i < phasesActuelles.size(); i++) {
-             PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
-             Phase phaseActuelle = phasesActuelles.get(i);
-            long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(),phaseActuelle.getDateDebutReel());
-             long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(),phaseActuelle.getDateFinReel());
+    public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+        ProjetStatHelper projetStatHelper = new ProjetStatHelper();
 
-             phaseStatHelper.setIdPhase(phaseActuelle.getId());
-             phaseStatHelper.setNomPhase(phaseActuelle.getNom());
+        List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
 
-             if (tpD >= 0)
-             phaseStatHelper.setTempAvanceDateDebut(tpD);
-             else
-             phaseStatHelper.setTempRetardDateDebut(-tpD);
+        List<Phase> phasesActuelles = getPhasesActuelles(id);
+        phasesActuelles.add(readPhase(1));
 
-             if (tpF >= 0)
-                 phaseStatHelper.setTempAvanceDateFin(tpF);
-             else
-                 phaseStatHelper.setTempRetardDateDebutFin(-tpF);
+        for (int i = 0; i < phasesActuelles.size(); i++) {
+            PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
+            Phase phaseActuelle = phasesActuelles.get(i);
+            long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(), phaseActuelle.getDateDebutReel());
+            long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(), phaseActuelle.getDateFinReel());
 
-             phaseStatHelpers.add(phaseStatHelper);
+            phaseStatHelper.setIdPhase(phaseActuelle.getId());
+            phaseStatHelper.setNomPhase(phaseActuelle.getNom());
 
-         }
-         projetStatHelper.setPhaseStatHelperList(phaseStatHelpers);
-         return projetStatHelper;
-     }
+            if (tpD >= 0) {
+                phaseStatHelper.setTempAvanceDateDebut(tpD);
+            } else {
+                phaseStatHelper.setTempRetardDateDebut(-tpD);
+            }
 
-     public void changeProjectstate(int idProjet, EtatProjet etatProjet) throws Exception {
-        Projet projet =read(idProjet);
-         projet.setEtat(etatProjet);
+            if (tpF >= 0) {
+                phaseStatHelper.setTempAvanceDateFin(tpF);
+            } else {
+                phaseStatHelper.setTempRetardDateDebutFin(-tpF);
+            }
 
-         update(projet);
-     }
+            phaseStatHelpers.add(phaseStatHelper);
+
+        }
+        projetStatHelper.setPhaseStatHelperList(phaseStatHelpers);
+        return projetStatHelper;
+    }
+
+    public void changeProjectstate(int idProjet, EtatProjet etatProjet) throws Exception {
+        Projet projet = read(idProjet);
+        projet.setEtat(etatProjet);
+        update(projet);
+
+        NotificationInput input = new NotificationInput();
+        input.setAction(Action.UPDATE_PROJECT_ETAT);
+        input.setEntityId(projet.getId());
+        input.setEntityType("PROJET");
+        input.setTitre(projet.getNom());
+        input.setAttributName("etat");
+        input.setCurrentVersion(etatProjet.name());
+
+        System.out.println(input.getTitre());
+
+        try {
+            client.sendNotification(input);
+        } catch (IOException ex) {
+            Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     // @Bignon cette methode me semble inutile
     public boolean exist(int id) throws Exception {

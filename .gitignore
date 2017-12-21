@@ -1,6 +1,8 @@
 target/
 .idea
-logs
+logs/
+log.out
+resources/
 projet.service.fonctionnel.iml
 /src/main/resources/local/
 nb-configuration.xml

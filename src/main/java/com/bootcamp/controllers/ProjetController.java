@@ -355,7 +355,6 @@ public class ProjetController {
      * Enable or disable the given phase (step)
      *
      * @param idPhase
-     * @param bool
      * @return
      * @throws SQLException
      */

@@ -162,16 +162,14 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Phase addPhase(int idPhase, int idProjet) throws SQLException {
+    public Phase addPhase(int idPhase, int idProjet) throws Exception {
         Phase phase = this.readPhase(idPhase);
         Projet projet = this.read(idProjet);
-        phase.setProjet(projet);
+        System.out.println("Avant "+projet.getPhases().size());
+        projet.getPhases().add(phase);
 
-        try {
-            this.updatePhase(phase);
-        } catch (Exception ex) {
-            Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.update(projet);
+        System.out.println("Après "+projet.getPhases().size());
         return phase;
     }
 
@@ -179,18 +177,27 @@ public class ProjetService implements DatabaseConstants {
      * Undo the link between the given phase (step) to the given project
      *
      * @param idPhase
+     * @param idProjet
      * @return phase
      * @throws SQLException
      */
-    public Phase removePhase(int idPhase) throws SQLException {
+    public Phase removePhase(int idPhase, int idProjet) throws Exception {
         Phase phase = this.readPhase(idPhase);
-        phase.setProjet(null);
-
-        try {
-            this.updatePhase(phase);
-        } catch (Exception ex) {
-            Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
+        Projet projet = this.read(idProjet);
+        int index = -1;
+        System.out.println("Avant "+projet.getPhases().size());
+        
+        for (Phase ph : projet.getPhases()) {
+            if (ph.getId()==phase.getId()){
+                index = projet.getPhases().indexOf(ph);
+            }
         }
+        System.out.println("INDEX "+index);
+        
+        projet.getPhases().remove(index);
+
+        System.out.println("Après "+projet.getPhases().size());
+        this.update(projet);
         return phase;
     }
 

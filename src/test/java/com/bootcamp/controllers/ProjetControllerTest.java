@@ -286,12 +286,13 @@ public class ProjetControllerTest {
 
     @Test
     public void removePrjetFromPhase() throws Exception{
+        int idProjet = 1;
         int idPhase = 1;
         Phase phase =  loadDataPhaseFromJsonFile().get( 1 );
-        when(projetService.removePhase(idPhase)).thenReturn(phase);
+        when(projetService.removePhase(idPhase, idProjet)).thenReturn(phase);
 
         RequestBuilder requestBuilder =
-                put("/projets/phases/delete/{idPhase}",idPhase)
+                put("/phases/delete/{idPhase}/{idProjet}",idPhase,idProjet)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectToJson(phase));
 

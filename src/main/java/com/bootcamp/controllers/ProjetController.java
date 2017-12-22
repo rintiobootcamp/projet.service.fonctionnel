@@ -197,7 +197,7 @@ public class ProjetController {
     }
 
     /**
-     * Link the given phase (step) to the given project
+     * Link or undo the link between the given phase (step) and the given project
      *
      * @param idPhase
      * @param idProjet
@@ -215,15 +215,16 @@ public class ProjetController {
     /**
      * Undo the link between the given phase (step) to the given project
      *
+     * @param idProjet
      * @param idPhase
      * @return phase
      * @throws SQLException
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/phases/delete/{idPhase}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/phases/delete/{idPhase}/{idProjet}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Remove a phase from a projet", notes = "Remove a phase from a projet")
-    public ResponseEntity<Phase> removeProjetFromPhase(@PathVariable("idPhase") int idPhase) throws Exception {
-        Phase phase = projetService.removePhase(idPhase);
+    public ResponseEntity<Phase> removeProjetFromPhase(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
+        Phase phase = projetService.removePhase(idPhase, idProjet);
         return new ResponseEntity<>(phase, HttpStatus.OK);
     }
 

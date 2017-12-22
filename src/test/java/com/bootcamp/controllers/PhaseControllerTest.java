@@ -44,10 +44,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = ProjetController.class, secure = false)
+@WebMvcTest(value = PhaseController.class, secure = false)
 @ContextConfiguration(classes={Application.class})
-public class ProjetControllerTest {
-    private static Logger logger = LogManager.getLogger(ProjetControllerTest.class);
+public class PhaseControllerTest {
+    private static Logger logger = LogManager.getLogger(PhaseControllerTest.class);
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,14 +56,14 @@ public class ProjetControllerTest {
 
 
     @Test
-    public void getProjets() throws Exception{
-        List<Projet> projets =  loadDataProjetFromJsonFile();
-        System.out.println(projets.size());
+    public void getPhases() throws Exception{
+        List<Phase> phases =  loadDataPhaseFromJsonFile();
+        System.out.println(phases.size());
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-        when(projetService.readAll(Mockito.any(HttpServletRequest.class))).thenReturn(projets);
+        when(projetService.readAllPhases(Mockito.any(HttpServletRequest.class))).thenReturn(phases);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/projets")
+                .get("/phases")
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -77,55 +77,30 @@ public class ProjetControllerTest {
     }
 
     @Test
-    public void getProjetByIdTest() throws Exception{
-        Projet projet = getProjetById(1);
+    public void getPhaseByIdTest() throws Exception{
+        int id =1;
+        Phase phase = loadDataPhaseFromJsonFile().get( id );
 
-        when(projetService.read(1)).thenReturn(projet);
+        when(projetService.readPhase(1)).thenReturn(phase);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get("/projets/1")
+                .get("/phases/{id}",id)
                 .accept(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
         MockHttpServletResponse response = result.getResponse();
-
-       logger.debug(response.getContentAsString());
-
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void createProjetTest() throws Exception{
-        Projet projet = loadDataProjetFromJsonFile().get( 2 );
-
-        when(projetService.create(projet)).thenReturn(projet);
-
-        RequestBuilder requestBuilder =
-                post("/projets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectToJson(projet));
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-
         logger.debug(response.getContentAsString());
-
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
     }
 
     @Test
-    public void updateProjettest() throws Exception{
-        Projet projet = new Projet();
-        projet.setNom("projet update");
-        when(projetService.update(projet)).thenReturn(true);
-
+    public void createPhaseTest() throws Exception{
+        Phase phase = loadDataPhaseFromJsonFile().get( 1 );
+        when(projetService.createPhase(phase)).thenReturn(phase);
         RequestBuilder requestBuilder =
-                put("/projets")
+                post("/phases")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectToJson(projet));
+                        .content(objectToJson(phase));
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
@@ -134,59 +109,42 @@ public class ProjetControllerTest {
         logger.debug(response.getContentAsString());
 
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
-
     }
 
     @Test
-    public void countProjetTest() throws Exception{
-        int count = loadDataProjetFromJsonFile().size();
-        when(projetService.getCountProject()).thenReturn(count);
+    public void updatePhaseTest() throws Exception{
+        int id = 1;
+        Phase phase =  loadDataPhaseFromJsonFile().get( id );
+        phase.setNom("phase update");
+        when(projetService.updatePhase(phase)).thenReturn(true);
 
         RequestBuilder requestBuilder =
-                get("/projets/count")
-                        .contentType(MediaType.APPLICATION_JSON);
+                put("/phases")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectToJson(phase));
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
         MockHttpServletResponse response = result.getResponse();
+
         logger.debug(response.getContentAsString());
+
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
 
     }
 
     @Test
-    public void getProjetStatTest() throws Exception{
-        int id = 1;
-        ProjetStatHelper projetStatHelper = new ProjetStatHelper();
-        Projet projet = getProjetById(id);
-        double tauxBA = (projet.getCoutReel() / projet.getBudgetPrevisionnel())*100;
-        when(projetService.avancementBudget(id)).thenReturn(tauxBA);
-        double tauxFPrive = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel())*100;
-        when(projetService.avancementFinancementPrive(id)).thenReturn(tauxFPrive);
-        double tauxtFPublic = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel())*100;
-        when(projetService.avancementFinancementPublic(id)).thenReturn(tauxtFPublic);
-        when(projetService.timeStatistics(id)).thenReturn(projetStatHelper);
-               RequestBuilder requestBuilder =
-                get("/projets/stats/{id}",id)
-                        .contentType(MediaType.APPLICATION_JSON);
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        logger.debug(response.getContentAsString());
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
-
-    }
-
-    @Test
-    public void deleteProjetTest() throws Exception{
-        int id = 1;
-        Projet projet = getProjetById(id);
-        when(projetService.delete(id)).thenReturn(true);
+    public void addPhaseToProjetTest() throws Exception{
+        int idProjet = 1;
+        int idPhase = 1;
+        Phase phase =  loadDataPhaseFromJsonFile().get( 1 );
+        when(projetService.addPhase(idPhase,idProjet)).thenReturn(phase);
 
         RequestBuilder requestBuilder =
-                delete("/projets/{id}",id)
-                        .contentType(MediaType.APPLICATION_JSON);
+                put("/phases/link/{idProjet}/{idPhase}",idProjet,idPhase)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectToJson(phase));
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
@@ -196,6 +154,48 @@ public class ProjetControllerTest {
 
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
+
+    }
+
+    @Test
+    public void removePrjetFromPhase() throws Exception{
+        int idProjet = 1;
+        int idPhase = 1;
+        Phase phase =  loadDataPhaseFromJsonFile().get( 1 );
+        when(projetService.removePhase(idPhase, idProjet)).thenReturn(phase);
+
+        RequestBuilder requestBuilder =
+                put("/phases/unlink/{idPhase}/{idProjet}",idPhase,idProjet)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectToJson(phase));
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        logger.debug(response.getContentAsString());
+
+        mockMvc.perform(requestBuilder).andExpect(status().isOk());
+
+
+    }
+    
+    @Test
+    public void deletePhaseTest() throws Exception{
+        int id = 1;
+        when(projetService.deletePhase(id)).thenReturn(true);
+
+        RequestBuilder requestBuilder =
+                delete("/phases/{id}",id)
+                        .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        logger.debug(response.getContentAsString());
+
+        mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
     }
 
@@ -218,49 +218,16 @@ public class ProjetControllerTest {
         return file;
     }
 
-    public  List<Projet> getProjectsFromJson() throws Exception {
+    public List<Phase> loadDataPhaseFromJsonFile() throws Exception {
         //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "projets.json");
+        File dataFile = getFile("data-json" + File.separator + "phases.json");
 
         String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
 
-        Type typeOfObjectsListNew = new TypeToken<List<Projet>>() {
+        Type typeOfObjectsListNew = new TypeToken<List<Phase>>() {
         }.getType();
-        List<Projet> projets = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
+        List<Phase> phases = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
 
-        return projets;
-    }
-
-    public List<Secteur> loadDataSecteurFromJsonFile() throws Exception {
-        //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "secteurs.json");
-
-        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
-
-        Type typeOfObjectsListNew = new TypeToken<List<Secteur>>() {
-        }.getType();
-        List<Secteur> secteurs = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
-
-        return secteurs;
-    }
-
-    public Projet getProjetById(int id) throws Exception {
-        List<Projet> projets = loadDataProjetFromJsonFile();
-        Projet projet = projets.stream().filter(item->item.getId()==id).findFirst().get();
-
-        return projet;
-    }
-
-    public List<Projet> loadDataProjetFromJsonFile() throws Exception {
-        //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "projets.json");
-
-        String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
-
-        Type typeOfObjectsListNew = new TypeToken<List<Projet>>() {
-        }.getType();
-        List<Projet> projets = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
-
-        return projets;
+        return phases;
     }
 }

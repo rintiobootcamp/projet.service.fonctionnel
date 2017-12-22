@@ -103,7 +103,7 @@ public class ProjetControllerIntegrationTest {
 
     @Test(priority = 1, groups = {"PhaseTest"})
     public void createPhaseTest() throws Exception{
-        String createURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        String createURI = BASE_URI+PHASE_PATH;
         Phase phase = loadDataPhaseFromJsonFile().get( 1 );
         Gson gson = new Gson();
         String phaseData = gson.toJson( phase );
@@ -165,7 +165,7 @@ public class ProjetControllerIntegrationTest {
 
     @Test(priority = 3, groups = {"PhaseTest"})
     public void getPhaseByIdTest() throws Exception{
-        String getPhaseById = BASE_URI+PROJET_PATH+PHASE_PATH+"/"+phaseId;
+        String getPhaseById = BASE_URI+PHASE_PATH+"/"+phaseId;
         Response response = given()
                 .log().all()
                 .contentType("application/json")
@@ -214,7 +214,7 @@ public class ProjetControllerIntegrationTest {
 
     @Test(priority = 5, groups = {"PhaseTest"})
     public void updatePhaseTest() throws Exception{
-        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        String updateURI = BASE_URI+PHASE_PATH;
         Phase phase = loadDataPhaseFromJsonFile().get( 1 );
         phase.setId( phaseId );
         phase.setNom( "update after doc impl integration" );
@@ -236,7 +236,7 @@ public class ProjetControllerIntegrationTest {
 
     @Test(priority = 6, groups = {"PhaseTest"})
     public void addPhaseToProjetTest() throws Exception{
-        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH+"/create/"+projetId+"/"+phaseId;
+        String updateURI = BASE_URI+PHASE_PATH+"/link/"+projetId+"/"+phaseId;
         Phase phase = loadDataPhaseFromJsonFile().get( 1 );
         phase.setId( phaseId );
         Gson gson = new Gson();
@@ -254,7 +254,7 @@ public class ProjetControllerIntegrationTest {
 
     @Test(priority = 7, groups = {"PhaseTest"})
     public void removeProjetFromPhaseTest() throws Exception{
-        String updateURI = BASE_URI+PROJET_PATH+PHASE_PATH+"/delete/"+phaseId;
+        String updateURI = BASE_URI+PHASE_PATH+"/unlink/"+phaseId+projetId;
         Phase phase = loadDataPhaseFromJsonFile().get( 1 );
         phase.setId( phaseId );
         Gson gson = new Gson();
@@ -297,7 +297,7 @@ public class ProjetControllerIntegrationTest {
      */
     @Test(priority = 9, groups = {"PhaseTest"})
     public void getAllPhasesTest()throws Exception{
-        String getAllPhaseURI = BASE_URI+PROJET_PATH+PHASE_PATH;
+        String getAllPhaseURI = BASE_URI+PHASE_PATH;
         Response response = given()
                 .log().all()
                 .contentType("application/json")
@@ -355,7 +355,7 @@ public class ProjetControllerIntegrationTest {
      */
     @Test(priority = 12, groups = {"ProjetTest"})
     public void deletePhaseTest() throws Exception{
-        String deletePhaseUI = BASE_URI+PROJET_PATH+PHASE_PATH+"/"+phaseId;
+        String deletePhaseUI = BASE_URI+PHASE_PATH+"/"+phaseId;
         Response response = given()
                 .log().all()
                 .contentType("application/json")

@@ -70,21 +70,6 @@ public class ProjetController {
     }
 
     /**
-     * Insert the given phase (step) in the database
-     *
-     * @param phase
-     * @return phase
-     * @throws java.sql.SQLException
-     */
-    @RequestMapping(method = RequestMethod.POST, value = "/phases")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Create a new project step", notes = "Create a new project step")
-    public ResponseEntity<Phase> createPhase(@RequestBody Phase phase) throws SQLException {
-       Phase result = projetService.createPhase( phase );
-       return new ResponseEntity<>( result,HttpStatus.OK );
-    }
-
-    /**
      * Get all the projects in the database
      *
      * @return projects list
@@ -98,22 +83,6 @@ public class ProjetController {
         List<Projet> projets = projetService.readAll(request);
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<List<Projet>>(projets, httpStatus);
-    }
-
-    /**
-     * Get all the phases (steps) in the database
-     *
-     * @return projects list
-     * @throws Exception
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/phases")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Get list of phases", notes = "Get list of phases")
-    public ResponseEntity<List<Phase>> findAllPhases() throws Exception {
-        HttpStatus httpStatus = null;
-        List<Phase> phases = projetService.readAllPhases(request);
-        httpStatus = HttpStatus.OK;
-        return new ResponseEntity<>(phases, httpStatus);
     }
 
     /**
@@ -142,31 +111,6 @@ public class ProjetController {
     }
 
     /**
-     * Get a phase (step) by its id
-     *
-     * @param id
-     * @return phase
-     */
-    @RequestMapping(method = RequestMethod.GET, value = "/phases/{id}")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Read a phase", notes = "Read a phase")
-    public ResponseEntity<Phase> readPhase(@PathVariable("id") int id) {
-
-        Phase phase = new Phase();
-        HttpStatus httpStatus = null;
-
-        try {
-            phase = projetService.readPhase(id);
-            httpStatus = HttpStatus.OK;
-        } catch (SQLException ex) {
-            Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
-            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        }
-
-        return new ResponseEntity<>(phase, httpStatus);
-    }
-
-    /**
      * Update the given project in the database
      *
      * @param projet
@@ -182,62 +126,6 @@ public class ProjetController {
     }
 
     /**
-     * Update the given phase (step) in the database
-     *
-     * @param phase
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(method = RequestMethod.PUT, value = "/phases")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Update a phase", notes = "update a phase")
-    public ResponseEntity<Boolean> updatePhase(@RequestBody @Valid Phase phase) throws Exception {
-        boolean done = projetService.updatePhase(phase);
-        return new ResponseEntity<>(done, HttpStatus.OK);
-    }
-
-    /**
-     * Link or undo the link between the given phase (step) and the given project
-     *
-     * @param idPhase
-     * @param idProjet
-     * @return phase
-     * @throws SQLException
-     */
-    @RequestMapping(method = RequestMethod.PUT, value = "/phases/create/{idProjet}/{idPhase}")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Add a phase to a projet", notes = "Add a phase to a projet")
-    public ResponseEntity<Phase> addPhaseToProject(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
-        Phase phase = projetService.addPhase(idPhase, idProjet);
-        return new ResponseEntity<>(phase, HttpStatus.OK);
-    }
-
-    /**
-     * Undo the link between the given phase (step) to the given project
-     *
-     * @param idProjet
-     * @param idPhase
-     * @return phase
-     * @throws SQLException
-     */
-    @RequestMapping(method = RequestMethod.PUT, value = "/phases/delete/{idPhase}/{idProjet}")
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "Remove a phase from a projet", notes = "Remove a phase from a projet")
-    public ResponseEntity<Phase> removeProjetFromPhase(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
-        Phase phase = projetService.removePhase(idPhase, idProjet);
-        return new ResponseEntity<>(phase, HttpStatus.OK);
-    }
-
-//    //Bignon: cette methode met a jour la liste de phase actuelles
-//    @RequestMapping(method = RequestMethod.PUT, value = "/phasesActuelles")
-//    @ApiVersions({"1.0"})
-//    @ApiOperation(value = "Update a projet currents phases", notes = "update a projet currents phases")
-//    public ResponseEntity<List<Phase>> updatePhasesList(@RequestBody @Valid Projet projet, Phase phase) throws Exception {
-//
-//        List<Phase> phasesActuelles = projetService.setPhasesActuelles(projet, phase);
-//        return new ResponseEntity<>(phasesActuelles, HttpStatus.OK);
-//    }
-    /**
      * Delete a project by its id
      *
      * @param id
@@ -252,21 +140,6 @@ public class ProjetController {
         boolean done = projetService.delete(id);
         return new ResponseEntity<>(done, HttpStatus.OK);
 
-    }
-
-    /**
-     * Delete a phase by its id
-     *
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/phases/{id}", method = RequestMethod.DELETE)
-    @ApiVersions({"1.0"})
-    @ApiOperation(value = "delete the phases", notes = "delete a particular phases")
-    public ResponseEntity<Boolean> deletePhase(@PathVariable("id") int id) throws Exception {
-        boolean done = projetService.deletePhase(id);
-        return new ResponseEntity<>(done, HttpStatus.OK);
     }
 
     /**

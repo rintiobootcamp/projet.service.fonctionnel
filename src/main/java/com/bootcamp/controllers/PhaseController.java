@@ -109,7 +109,7 @@ public class PhaseController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/phases")
+    @RequestMapping(method = RequestMethod.PUT)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Update a phase", notes = "update a phase")
     public ResponseEntity<Boolean> updatePhase(@RequestBody @Valid Phase phase) throws Exception {

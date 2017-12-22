@@ -12,8 +12,10 @@ import com.bootcamp.commons.ws.usecases.pivotone.NotificationInput;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
+import com.bootcamp.crud.RegionCRUD;
 import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
+import com.bootcamp.entities.Region;
 
 import com.bootcamp.helpers.PhaseStatHelper;
 import com.bootcamp.helpers.ProjetStatHelper;
@@ -200,6 +202,46 @@ public class ProjetService implements DatabaseConstants {
         this.update(projet);
         return phase;
     }
+    
+    /**
+     * Link the given region (location) to the given project
+     *
+     * @param idRegion
+     * @param idProjet
+     * @return phase
+     * @throws SQLException
+     */
+    public Projet addRegion(String nomRegion, int idProjet) throws Exception {
+        Region region = this.readRegion(nomRegion);
+        Projet projet = this.read(idProjet);
+        projet.getRegions().add(region);
+        this.update(projet);
+        return projet;
+    }
+
+    /**
+     * Undo the link between the given region (location) to the given project
+     *
+     * @param nomRegion
+     * @param idProjet
+     * @return phase
+     * @throws SQLException
+     */
+    public Projet removeRegion(String nomRegion, int idProjet) throws Exception {
+        Region region = this.readRegion(nomRegion);
+        Projet projet = this.read(idProjet);
+        int index = -1;
+        
+        for (Region rg : projet.getRegions()) {
+            if (rg.getId()==region.getId()){
+                index = projet.getRegions().indexOf(rg);
+            }
+        }
+        projet.getRegions().remove(index);
+
+        this.update(projet);
+        return projet;
+    }
 
     /**
      * Get all the projects of the database matching the request
@@ -306,6 +348,11 @@ public class ProjetService implements DatabaseConstants {
             phase.setActif(false);
         } else {
             phase.setActif(true);
+            try {
+                this.updatePhase(phase);
+            } catch (Exception ex) {
+                Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             NotificationInput input = new NotificationInput();
             input.setAction(Action.UPDATE_PROJECT_PHASE);
@@ -411,6 +458,83 @@ public class ProjetService implements DatabaseConstants {
             return true;
         }
         return false;
+    }
+    
+        /**
+     * Insert the given region (step) in the database
+     *
+     * @param region
+     * @return region
+     * @throws SQLException
+     */
+    public Region createRegion(Region region) throws SQLException {
+        RegionCRUD.create(region);
+        return region;
+    }
+    
+    /**
+     * Get a region by its id
+     *
+     * @param nom
+     * @return region
+     * @throws SQLException
+     */
+    public Region readRegion(String nom) throws SQLException {
+        Criterias criterias = new Criterias();
+        criterias.addCriteria(new Criteria("nom", "=", nom));
+        Region region = RegionCRUD.read(criterias).get(0);
+        return region;
+    }
+    
+    /**
+     * Update the given region in the database
+     *
+     * @param region
+     * @return
+     * @throws Exception
+     */
+    public boolean updateRegion(Region region) throws Exception {
+        return RegionCRUD.update(region);
+    }
+    
+    /**
+     * Delete a region (step) by its id
+     *
+     * @param nom
+     * @return
+     * @throws Exception
+     */
+    public boolean deleteRegion(String nom) throws Exception {
+        Region region = readRegion(nom);
+        return RegionCRUD.delete(region);
+    }
+	
+	/**
+     * Get all the regions of the database matching the request
+     *
+     * @param request
+     * @return regions list
+     * @throws SQLException
+     * @throws IllegalAccessException
+     * @throws DatabaseException
+     * @throws InvocationTargetException
+     */
+    public List<Region> readAllRegions(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+        Criterias criterias = RequestParser.getCriterias(request);
+        List<String> fields = RequestParser.getFields(request);
+        List<Region> regions = null;
+        if (criterias == null && fields == null) {
+            regions = RegionCRUD.read();
+        } else if (criterias != null && fields == null) {
+            regions = RegionCRUD.read(criterias);
+        } else if (criterias == null && fields != null) {
+            regions = RegionCRUD.read(fields);
+        } else {
+            regions = RegionCRUD.read(criterias, fields);
+        }
+
+        return regions;
+
     }
 
 }

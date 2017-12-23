@@ -61,7 +61,6 @@ public class ProjetService implements DatabaseConstants {
         input.setEntityId(projet.getId());
         input.setEntityType("PROJET");
         input.setTitre(projet.getNom());
-
         try {
             client.sendNotification(input);
         } catch (IOException ex) {
@@ -187,18 +186,12 @@ public class ProjetService implements DatabaseConstants {
         Phase phase = this.readPhase(idPhase);
         Projet projet = this.read(idProjet);
         int index = -1;
-        System.out.println("Avant "+projet.getPhases().size());
-        
         for (Phase ph : projet.getPhases()) {
             if (ph.getId()==phase.getId()){
                 index = projet.getPhases().indexOf(ph);
             }
         }
-        System.out.println("INDEX "+index);
-        
         projet.getPhases().remove(index);
-
-        System.out.println("Après "+projet.getPhases().size());
         this.update(projet);
         return phase;
     }
@@ -206,7 +199,7 @@ public class ProjetService implements DatabaseConstants {
     /**
      * Link the given region (location) to the given project
      *
-     * @param idRegion
+     * @param nomRegion
      * @param idProjet
      * @return phase
      * @throws SQLException
@@ -235,9 +228,10 @@ public class ProjetService implements DatabaseConstants {
         for (Region rg : projet.getRegions()) {
             if (rg.getId()==region.getId()){
                 index = projet.getRegions().indexOf(rg);
+                projet.getRegions().remove(index);
+                break;
             }
         }
-        projet.getRegions().remove(index);
 
         this.update(projet);
         return projet;

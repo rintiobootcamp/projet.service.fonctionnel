@@ -1,5 +1,6 @@
 package com.bootcamp.integration;
 
+import com.bootcamp.commons.enums.RegionType;
 import com.bootcamp.commons.utils.GsonUtils;
 import com.bootcamp.entities.*;
 import com.google.common.base.Charsets;
@@ -41,7 +42,7 @@ import static com.jayway.restassured.RestAssured.given;
  */
 
 
-public class ProjetControllerIntegrationTest {
+public class RegionControllerIntegrationTest {
     private static Logger logger = LogManager.getLogger(ProjetControllerIntegrationTest.class);
     /**
      *The Base URI of categorie fonctionnal service,
@@ -54,7 +55,7 @@ public class ProjetControllerIntegrationTest {
      */
     private String PROJET_PATH ="/projets";
 
-    private String PHASE_PATH ="/phases";
+    private String REGION_PATH ="/regions";
 
 
     /**
@@ -64,7 +65,7 @@ public class ProjetControllerIntegrationTest {
      */
     private int projetId = 0;
 
-    private int phaseId = 0;
+    private int regionId = 0;
 
     /**
      * This method create a new projet with the given id
@@ -78,7 +79,44 @@ public class ProjetControllerIntegrationTest {
      * If every done , it will return a 200 httpStatus code
      * @throws Exception
      */
-    @Test(priority = 0, groups = {"ProjetTest"})
+
+    @Test(priority = 0, groups = {"RegionTest"})
+    public void createRegionTest() throws Exception{
+        String createURI = BASE_URI+REGION_PATH;
+        Region region = loadDataRegionFromJsonFile().get( 1 );
+        Gson gson = new Gson();
+        String regionData = gson.toJson( region );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body(regionData)
+                .expect()
+                .when()
+                .post(createURI);
+        regionId = gson.fromJson( response.getBody().print(),Region.class ).getId();
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+
+
+    }
+
+
+
+
+    /**
+     * This method create a new projet with the given id
+     * @see Projet#id
+     * <b>you have to chenge the name of
+     * the projet if this name already exists in the database
+     * @see Projet#getNom()
+     * else, the projet  will be created but not wiht the given ID.
+     * and this will accure an error in the getById and update method</b>
+     * Note that this method will be the first to execute
+     * If every done , it will return a 200 httpStatus code
+     * @throws Exception
+     */
+    @Test(priority = 1, groups = {"RegionTest"})
     public void createProjetTest() throws Exception{
         String createURI = BASE_URI+PROJET_PATH;
         Projet projet = getProjetById( 1 );
@@ -99,6 +137,57 @@ public class ProjetControllerIntegrationTest {
     }
 
 
+    /**
+     * Get All the projets in the database
+     * If every done , it will return a 200 httpStatus code
+     * @throws Exception
+     */
+    @Test(priority = 2, groups = {"ProjetTest"})
+    public void getAllProjetsTest()throws Exception{
+        String getAllProjetURI = BASE_URI+PROJET_PATH;
+        Gson gson =new Gson();
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .get(getAllProjetURI);
+
+        String text = response.getBody().print().toString();
+
+
+        Type typeOfObjectsListNew = new TypeToken<List<Projet>>() {
+        }.getType();
+        List<Projet> projets = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
+        projetId = projets.get( 0 ).getId();
+
+        logger.debug(response.getBody().prettyPrint());
+
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+    }
+
+
+    /**
+     * Get All the regions in the database
+     * If every done , it will return a 200 httpStatus code
+     * @throws Exception
+     */
+    @Test(priority = 3, groups = {"RegionTest"})
+    public void getAllRegionsTest()throws Exception{
+        String getAllRegionURI = BASE_URI+REGION_PATH;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .get(getAllRegionURI);
+
+        logger.debug(response.getBody().prettyPrint());
+
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+    }
 
     /**
      * This method get a projet with the given id
@@ -111,25 +200,56 @@ public class ProjetControllerIntegrationTest {
      * @throws Exception
      */
 
-    @Test(priority = 2, groups = {"ProjetTest"})
-    public void getProjetByIdTest() throws Exception{
-
-        String getProjetById = BASE_URI+PROJET_PATH+"/"+projetId;
-
+    @Test(priority =4, groups = {"RegionTest"})
+    public void getRegionByNameTest() throws Exception{
+        String regionName = "region 2";
+        String getRegionById = BASE_URI+REGION_PATH+"/"+regionName;
         Response response = given()
                 .log().all()
                 .contentType("application/json")
                 .expect()
                 .when()
-                .get(getProjetById);
-
+                .get(getRegionById);
         logger.debug(response.getBody().prettyPrint());
-
         Assert.assertEquals(response.statusCode(), 200) ;
-
-
     }
 
+
+
+/*    @Test(priority = 5, groups = {"RegionTest"})
+    public void enableRegionTest() throws Exception{
+        String updateURI = BASE_URI+REGION_PATH+"/enable/"+regionId;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .put(updateURI);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+
+    }*/
+
+
+
+    @Test(priority = 5, groups = {"RegionTest"})
+    public void addRegionToProjetTest() throws Exception{
+        String regionName = "region 2";
+        String updateURI = BASE_URI+REGION_PATH+"/link/"+projetId+"/"+regionName;
+        Region region = loadDataRegionFromJsonFile().get( 1 );
+        region.setId( regionId );
+        Gson gson = new Gson();
+        String regionData = gson.toJson( region );
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body(regionData)
+                .expect()
+                .when()
+                .put(updateURI);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
 
     /**
      * Update a projet with the given ID
@@ -141,20 +261,18 @@ public class ProjetControllerIntegrationTest {
      * @throws Exception
      */
 
-    @Test(priority = 4, groups = {"ProjetTest"})
-    public void updateProjetTest() throws Exception{
-        String updateURI = BASE_URI+PROJET_PATH;
-        Projet projet = getProjetById( 1 );
-        projet.setId( projetId );
-        projet.setNom( "update after doc impl integration" );
-        projet.setRegions( null );
-        projet.setImpactList( null );
+    @Test(priority = 6, groups = {"RegionTest"})
+    public void updateRegionTest() throws Exception{
+        String updateURI = BASE_URI+REGION_PATH;
+        Region region = loadDataRegionFromJsonFile().get( 1 );
+        region.setId( regionId );
+        region.setNom( "region 3" );
         Gson gson = new Gson();
-        String projetData = gson.toJson( projet );
+        String regionData = gson.toJson( region );
         Response response = given()
                 .log().all()
                 .contentType("application/json")
-                .body(projetData)
+                .body(regionData)
                 .expect()
                 .when()
                 .put(updateURI);
@@ -163,31 +281,47 @@ public class ProjetControllerIntegrationTest {
 
         Assert.assertEquals(response.statusCode(), 200) ;
 
-
-
     }
 
 
 
+
+
+    @Test(priority = 7, groups = {"RegionTest"})
+    public void removeProjetFromRegionTest() throws Exception{
+        String regionName = "region 3";
+        String updateURI = BASE_URI+REGION_PATH+"/unlink/"+projetId+"/"+regionName;
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .expect()
+                .when()
+                .put(updateURI);
+        logger.debug(response.getBody().prettyPrint());
+        Assert.assertEquals(response.statusCode(), 200) ;
+    }
+
+
+
+
+
     /**
-     * Get All the projets in the database
-     * If every done , it will return a 200 httpStatus code
+     * Delete a region for the given Name
+     * will return a 200 httpStatus code if OK
      * @throws Exception
      */
     @Test(priority = 8, groups = {"ProjetTest"})
-    public void getAllProjetsTest()throws Exception{
-        String getAllProjetURI = BASE_URI+PROJET_PATH;
+    public void deleteRegionTest() throws Exception{
+        String regionName = "region 3";
+        String deleteRegionUI = BASE_URI+REGION_PATH;
         Response response = given()
                 .log().all()
+                .queryParam( "nom",regionName )
                 .contentType("application/json")
                 .expect()
                 .when()
-                .get(getAllProjetURI);
-
-        logger.debug(response.getBody().prettyPrint());
-
+                .delete(deleteRegionUI);
         Assert.assertEquals(response.statusCode(), 200) ;
-
     }
 
 
@@ -196,28 +330,9 @@ public class ProjetControllerIntegrationTest {
      * will return a 200 httpStatus code if OK
      * @throws Exception
      */
-    @Test(priority = 10, groups = {"ProjetTest"})
-    public void getProjetStatisticTest() throws Exception{
-        String getStatProjetUI = BASE_URI+PROJET_PATH+"/stats/"+projetId;
-        Response response = given()
-                .log().all()
-                .contentType("application/json")
-                .expect()
-                .when()
-                .get(getStatProjetUI);
-        Assert.assertEquals(response.statusCode(), 200) ;
-    }
-
-
-
-    /**
-     * Delete a projet for the given ID
-     * will return a 200 httpStatus code if OK
-     * @throws Exception
-     */
-    @Test(priority = 11, groups = {"ProjetTest"})
+    @Test(priority = 9, groups = {"ProjetTest"})
     public void deleteProjetTest() throws Exception{
-        String deleteProjetUI = BASE_URI+PROJET_PATH+"/"+2;
+        String deleteProjetUI = BASE_URI+PROJET_PATH+"/"+projetId;
         Response response = given()
                 .log().all()
                 .contentType("application/json")
@@ -226,11 +341,8 @@ public class ProjetControllerIntegrationTest {
                 .delete(deleteProjetUI);
         Assert.assertEquals(response.statusCode(), 200) ;
     }
-
-
-
-    private int getLastPhasetId(List<Phase> list) throws Exception {
-        Phase input = list.get( list.size() - 1 );
+    private int getLastRegiontId(List<Region> list) throws Exception {
+        Region input = list.get( list.size() - 1 );
         return input.getId();
     }
 
@@ -253,17 +365,17 @@ public class ProjetControllerIntegrationTest {
     }
 
 
-    public List<Phase> loadDataPhaseFromJsonFile() throws Exception {
+    public List<Region> loadDataRegionFromJsonFile() throws Exception {
         //TestUtils testUtils = new TestUtils();
-        File dataFile = getFile("data-json" + File.separator + "phases.json");
+        File dataFile = getFile("data-json" + File.separator + "regions.json");
 
         String text = Files.toString(new File(dataFile.getAbsolutePath()), Charsets.UTF_8);
 
-        Type typeOfObjectsListNew = new TypeToken<List<Phase>>() {
+        Type typeOfObjectsListNew = new TypeToken<List<Region>>() {
         }.getType();
-        List<Phase> phases = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
+        List<Region> regions = GsonUtils.getObjectFromJson(text, typeOfObjectsListNew);
 
-        return phases;
+        return regions;
     }
 
     /**

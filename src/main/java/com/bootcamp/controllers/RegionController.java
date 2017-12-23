@@ -9,9 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,9 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  *
@@ -73,7 +68,7 @@ public class RegionController {
     /**
      * Get a region (location) by its id
      *
-     * @param id
+     * @param nom
      * @return region
      */
     @RequestMapping(method = RequestMethod.GET, value = "/{nom}")
@@ -113,7 +108,7 @@ public class RegionController {
     /**
      * Link or undo the link between the given region (location) and the given project
      *
-     * @param idRegion
+     * @param nom
      * @param idProjet
      * @return region
      * @throws SQLException
@@ -130,14 +125,14 @@ public class RegionController {
      * Undo the link between the given region (location) to the given project
      *
      * @param idProjet
-     * @param idRegion
+     * @param nom
      * @return region
      * @throws SQLException
      */
-    @RequestMapping(method = RequestMethod.PUT, value = "/unlink/{idRegion}/{idProjet}")
+    @RequestMapping(method = RequestMethod.PUT, value = "/unlink/{idProjet}/{nomRegion}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Remove a region from a projet", notes = "Remove a region from a projet")
-    public ResponseEntity<Projet> removeProjetFromRegion(@PathVariable("idProjet") int idProjet, @PathVariable("nom") String nom) throws Exception {
+    public ResponseEntity<Projet> removeRegionFromProjet(@PathVariable("idProjet") int idProjet, @PathVariable("nomRegion") String nom) throws Exception {
         Projet projet = projetService.removeRegion(nom, idProjet);
         return new ResponseEntity<>(projet, HttpStatus.OK);
     }
@@ -145,14 +140,14 @@ public class RegionController {
     /**
      * Delete a region by its id
      *
-     * @param id
+     * @param nom
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(method = RequestMethod.DELETE)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "delete the regions", notes = "delete a particular regions")
-    public ResponseEntity<Boolean> deleteRegion(@PathVariable("nom") String nom) throws Exception {
+    public ResponseEntity<Boolean> deleteRegion(@RequestParam("nom") String nom) throws Exception {
         boolean done = projetService.deleteRegion(nom);
         return new ResponseEntity<>(done, HttpStatus.OK);
     }

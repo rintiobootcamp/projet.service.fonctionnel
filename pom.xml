@@ -289,11 +289,9 @@
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
                     </resource>
-                    <!--
                     <resource>
                         <directory>${config.home}</directory>
                     </resource>
-                    -->
                 </resources>
             </build>
         </profile>
@@ -307,12 +305,9 @@
                         <directory>src/main/resources</directory>
                         <filtering>true</filtering>
                     </resource>
-                    <!--
                     <resource>
                         <directory>${config.home}</directory>
                     </resource>
-                    -->
-
                 </resources>
             </build>
         </profile>

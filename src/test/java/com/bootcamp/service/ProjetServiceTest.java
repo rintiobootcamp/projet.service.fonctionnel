@@ -83,6 +83,13 @@ public class ProjetServiceTest {
         return projet;
     }
 
+    private Projet consommationBudget() throws Exception {
+        Projet projet = getProjetById(1);
+        double taux = ( projet.getConsummedCost() / projet.getCoutReel() ) ;
+
+        return projet;
+    }
+
 
     @Test
     public void createProjet() throws Exception{

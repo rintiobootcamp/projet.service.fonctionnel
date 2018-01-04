@@ -175,11 +175,13 @@ public class ProjetController {
 
         try {
             double tauxBudget = projetService.avancementBudget(id);
+            double consumBudget = projetService.consommationBudget(id);
             double tauxFPrive = projetService.avancementFinancementPrive(id);
             double tauxtFPublic = projetService.avancementFinancementPublic(id);
 
             projetStatHelper = projetService.timeStatistics(id);
             projetStatHelper.setTauxBuget(tauxBudget);
+            projetStatHelper.setConsumBuget(consumBudget);
             projetStatHelper.setTauxFinancementPrive(tauxFPrive);
             projetStatHelper.setTauxFinancementPublic(tauxtFPublic);
 

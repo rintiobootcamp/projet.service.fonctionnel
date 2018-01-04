@@ -6,6 +6,7 @@ import java.util.List;
 
 public class ProjetStatHelper {
     private double tauxBuget;
+    private double consumedBuget;
     private double tauxFinancementPrive;
     private double tauxFinancementPublic;
     private List<PhaseStatHelper> phaseStatHelperList;
@@ -39,5 +40,13 @@ public class ProjetStatHelper {
 
     public void setPhaseStatHelperList(List<PhaseStatHelper> phaseStatHelperList) {
         this.phaseStatHelperList = phaseStatHelperList;
+    }
+
+    public double getConsumBuget() {
+        return consumedBuget;
+    }
+
+    public void setConsumBuget(double consumBuget) {
+        this.consumedBuget = consumBuget;
     }
 }

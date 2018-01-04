@@ -372,6 +372,14 @@ public class ProjetService implements DatabaseConstants {
         return taux;
     }
 
+    //@Bignon : calcul du taux de consommation du budget d'un projet
+    public double consommationBudget(int id) throws SQLException {
+        Projet projet = read(id);
+        double taux = (projet.getConsummedCost() / projet.getBudgetPrevisionnel()) * 100;
+
+        return taux;
+    }
+
     public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = read(id);
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;

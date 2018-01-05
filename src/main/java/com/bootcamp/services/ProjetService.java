@@ -1,13 +1,6 @@
 package com.bootcamp.services;
 
 import com.bootcamp.client.NotificationClient;
-import com.bootcamp.commons.constants.DatabaseConstants;
-import com.bootcamp.commons.enums.Action;
-import com.bootcamp.commons.enums.EtatProjet;
-import com.bootcamp.commons.exceptions.DatabaseException;
-import com.bootcamp.commons.models.Criteria;
-import com.bootcamp.commons.models.Criterias;
-import com.bootcamp.commons.models.Rule;
 import com.bootcamp.commons.ws.usecases.pivotone.NotificationInput;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;

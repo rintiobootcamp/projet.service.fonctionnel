@@ -1,6 +1,13 @@
 package com.bootcamp.services;
 
 import com.bootcamp.client.NotificationClient;
+import com.bootcamp.commons.constants.DatabaseConstants;
+import com.bootcamp.commons.enums.Action;
+import com.bootcamp.commons.enums.EtatProjet;
+import com.bootcamp.commons.exceptions.DatabaseException;
+import com.bootcamp.commons.models.Criteria;
+import com.bootcamp.commons.models.Criterias;
+import com.bootcamp.commons.models.Rule;
 import com.bootcamp.commons.ws.usecases.pivotone.NotificationInput;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;
@@ -157,13 +164,23 @@ public class ProjetService implements DatabaseConstants {
      * @throws SQLException
      */
     public Phase addPhase(int idPhase, int idProjet) throws Exception {
+        List<Phase> phases = new ArrayList<>();
+
         Phase phase = this.readPhase(idPhase);
         Projet projet = this.read(idProjet);
-        System.out.println("Avant "+projet.getPhases().size());
-        projet.getPhases().add(phase);
+
+        if (projet.getPhases().isEmpty()){
+            phases.add(phase);
+            projet.setPhases(phases);
+        }else
+            projet.getPhases().add(phase);
+
+
+        //System.out.println("Avant "+projet.getPhases().size());
+        projet.setPhases(phases);
 
         this.update(projet);
-        System.out.println("Après "+projet.getPhases().size());
+       // System.out.println("Après "+projet.getPhases().size());
         return phase;
     }
 
@@ -312,7 +329,7 @@ public class ProjetService implements DatabaseConstants {
         List<Phase> phasesActuelles = new ArrayList<>();
         phasesActuelles.clear();
         for (Phase phase : phases) {
-            if (phase.getProjet().getId() == idProjet) {
+            if (phase.isActif()) {
                 phasesActuelles.add(phase);
             }
 

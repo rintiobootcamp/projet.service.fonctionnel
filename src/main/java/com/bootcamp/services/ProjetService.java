@@ -37,7 +37,7 @@ import javax.annotation.PostConstruct;
 
 @Component
 public class ProjetService implements DatabaseConstants {
-    
+
     NotificationClient client;
     ProjetHelper helper = new ProjetHelper();
 
@@ -166,12 +166,21 @@ public class ProjetService implements DatabaseConstants {
      * @throws SQLException
      */
     public PhaseWS addPhase(int idPhase, int idProjet) throws Exception {
+        List<Phase> phases = new ArrayList<>();
+
         Phase phase = helper.buildPhase(this.readPhase(idPhase));
         Projet projet = helper.buildProjet(this.read(idProjet));
-        projet.getPhases().add(phase);
-        
+
+        if (projet.getPhases().isEmpty()) {
+            phases.add(phase);
+            projet.setPhases(phases);
+        } else {
+            projet.getPhases().add(phase);
+        }
+
+        projet.setPhases(phases);
+
         this.update(projet);
-        System.out.println("Après " + projet.getPhases().size());
         return helper.buildPhaseWS(phase);
     }
 
@@ -225,7 +234,7 @@ public class ProjetService implements DatabaseConstants {
         Region region = helper.buildRegion(this.readRegion(nomRegion));
         Projet projet = helper.buildProjet(this.read(idProjet));
         int index = -1;
-        
+
         for (Region rg : projet.getRegions()) {
             if (rg.getId() == region.getId()) {
                 index = projet.getRegions().indexOf(rg);
@@ -233,7 +242,7 @@ public class ProjetService implements DatabaseConstants {
                 break;
             }
         }
-        
+
         this.update(projet);
         return helper.buildProjetWS(projet);
     }
@@ -261,9 +270,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             projets = ProjetCRUD.read(criterias, fields);
         }
-        
+
         return helper.buildListProjetWS(projets);
-        
+
     }
 
     /**
@@ -289,9 +298,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             phases = PhaseCRUD.read(criterias, fields);
         }
-        
+
         return helper.buildListPhaseWS(phases);
-        
+
     }
 
     /**
@@ -311,19 +320,19 @@ public class ProjetService implements DatabaseConstants {
      * @return phases list
      */
     public List<PhaseWS> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
-        
+
         Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
         criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
-        
+
         List<Phase> phases = PhaseCRUD.read(criterias);
         List<Phase> phasesActuelles = new ArrayList<>();
         phasesActuelles.clear();
         for (Phase phase : phases) {
-            if (phase.getProjet().getId() == idProjet) {
+            if (phase.isActif()) {
                 phasesActuelles.add(phase);
             }
-            
+
         }
 //
 //    List<Phase> phases = PhaseCRUD.read();
@@ -348,7 +357,7 @@ public class ProjetService implements DatabaseConstants {
             } catch (Exception ex) {
                 Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
             NotificationInput input = new NotificationInput();
             input.setAction(Action.UPDATE_PROJECT_PHASE);
             input.setEntityId(phase.getProjet().getId());
@@ -356,7 +365,7 @@ public class ProjetService implements DatabaseConstants {
             input.setTitre(phase.getProjet().getNom());
             input.setAttributName("phase");
             input.setCurrentVersion(phase.getNom());
-            
+
             try {
                 client.sendNotification(input);
             } catch (IOException ex) {
@@ -369,7 +378,7 @@ public class ProjetService implements DatabaseConstants {
     public double avancementBudget(int id) throws SQLException {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
-        
+
         return taux;
     }
 
@@ -377,14 +386,14 @@ public class ProjetService implements DatabaseConstants {
     public double consommationBudget(int id) throws SQLException {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
-        
+
         return taux;
     }
-    
+
     public double avancementFinancementPrive(int id) throws SQLException {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;
-        
+
         return taux;
     }
 
@@ -392,52 +401,52 @@ public class ProjetService implements DatabaseConstants {
     public double avancementFinancementPublic(int id) throws SQLException {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel()) * 100;
-        
+
         return taux;
     }
 
     //@bignon: temp de retard ou d'avancement de la phase
     public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
-        
+
         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
-        
+
         List<Phase> phasesActuelles = helper.buildListPhase(getPhasesActuelles(id));
         phasesActuelles.add(helper.buildPhase(readPhase(1)));
-        
+
         for (int i = 0; i < phasesActuelles.size(); i++) {
             PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
             Phase phaseActuelle = phasesActuelles.get(i);
             long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(), phaseActuelle.getDateDebutReel());
             long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(), phaseActuelle.getDateFinReel());
-            
+
             phaseStatHelper.setIdPhase(phaseActuelle.getId());
             phaseStatHelper.setNomPhase(phaseActuelle.getNom());
-            
+
             if (tpD >= 0) {
                 phaseStatHelper.setTempAvanceDateDebut(tpD);
             } else {
                 phaseStatHelper.setTempRetardDateDebut(-tpD);
             }
-            
+
             if (tpF >= 0) {
                 phaseStatHelper.setTempAvanceDateFin(tpF);
             } else {
                 phaseStatHelper.setTempRetardDateDebutFin(-tpF);
             }
-            
+
             phaseStatHelpers.add(phaseStatHelper);
-            
+
         }
         projetStatHelper.setPhaseStatHelperList(phaseStatHelpers);
         return projetStatHelper;
     }
-    
+
     public void changeProjectstate(int idProjet, EtatProjet etatProjet) throws Exception {
         Projet projet = helper.buildProjet(read(idProjet));
         projet.setEtat(etatProjet);
         update(projet);
-        
+
         NotificationInput input = new NotificationInput();
         input.setAction(Action.UPDATE_PROJECT_ETAT);
         input.setEntityId(projet.getId());
@@ -445,9 +454,9 @@ public class ProjetService implements DatabaseConstants {
         input.setTitre(projet.getNom());
         input.setAttributName("etat");
         input.setCurrentVersion(etatProjet.name());
-        
+
         System.out.println(input.getTitre());
-        
+
         try {
             client.sendNotification(input);
         } catch (IOException ex) {
@@ -535,9 +544,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             regions = RegionCRUD.read(criterias, fields);
         }
-        
+
         return helper.buildListRegionWS(regions);
-        
+
     }
-    
+
 }

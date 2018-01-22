@@ -1,7 +1,8 @@
 package com.bootcamp.controllers;
 
-import com.bootcamp.entities.Projet;
 import com.bootcamp.entities.Region;
+import com.bootcamp.helpers.ProjetWS;
+import com.bootcamp.helpers.RegionWS;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -30,7 +31,7 @@ public class RegionController {
 
     @Autowired
     ProjetService projetService;
-    
+
     @Autowired
     HttpServletRequest request;
 
@@ -44,9 +45,9 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project location", notes = "Create a new project location")
-    public ResponseEntity<Region> createRegion(@RequestBody Region region) throws SQLException {
-       Region result = projetService.createRegion( region );
-       return new ResponseEntity<>( result,HttpStatus.OK );
+    public ResponseEntity<RegionWS> createRegion(@RequestBody Region region) throws SQLException {
+        RegionWS result = projetService.createRegion(region);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
@@ -58,9 +59,9 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of regions", notes = "Get list of regions")
-    public ResponseEntity<List<Region>> findAllRegions() throws Exception {
+    public ResponseEntity<List<RegionWS>> findAllRegions() throws Exception {
         HttpStatus httpStatus = null;
-        List<Region> regions = projetService.readAllRegions(request);
+        List<RegionWS> regions = projetService.readAllRegions(request);
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<>(regions, httpStatus);
     }
@@ -74,9 +75,9 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.GET, value = "/{nom}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a region", notes = "Read a region")
-    public ResponseEntity<Region> readRegion(@PathVariable("nom") String nom) {
+    public ResponseEntity<RegionWS> readRegion(@PathVariable("nom") String nom) {
 
-        Region region = new Region();
+        RegionWS region = new RegionWS();
         HttpStatus httpStatus = null;
 
         try {
@@ -106,7 +107,8 @@ public class RegionController {
     }
 
     /**
-     * Link or undo the link between the given region (location) and the given project
+     * Link or undo the link between the given region (location) and the given
+     * project
      *
      * @param nom
      * @param idProjet
@@ -116,8 +118,8 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.PUT, value = "/link/{idProjet}/{nom}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Add a region to a projet", notes = "Add a region to a projet")
-    public ResponseEntity<Projet> addRegionToProject(@PathVariable("idProjet") int idProjet, @PathVariable("nom") String nom) throws Exception {
-        Projet projet = projetService.addRegion(nom, idProjet);
+    public ResponseEntity<ProjetWS> addRegionToProject(@PathVariable("idProjet") int idProjet, @PathVariable("nom") String nom) throws Exception {
+        ProjetWS projet = projetService.addRegion(nom, idProjet);
         return new ResponseEntity<>(projet, HttpStatus.OK);
     }
 
@@ -132,8 +134,8 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.PUT, value = "/unlink/{idProjet}/{nomRegion}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Remove a region from a projet", notes = "Remove a region from a projet")
-    public ResponseEntity<Projet> removeRegionFromProjet(@PathVariable("idProjet") int idProjet, @PathVariable("nomRegion") String nom) throws Exception {
-        Projet projet = projetService.removeRegion(nom, idProjet);
+    public ResponseEntity<ProjetWS> removeRegionFromProjet(@PathVariable("idProjet") int idProjet, @PathVariable("nomRegion") String nom) throws Exception {
+        ProjetWS projet = projetService.removeRegion(nom, idProjet);
         return new ResponseEntity<>(projet, HttpStatus.OK);
     }
 

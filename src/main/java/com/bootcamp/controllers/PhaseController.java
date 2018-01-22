@@ -1,11 +1,7 @@
 package com.bootcamp.controllers;
 
-import com.bootcamp.commons.enums.EtatProjet;
-import com.bootcamp.commons.exceptions.DatabaseException;
-import com.bootcamp.commons.ws.constants.CommonsWsConstants;
 import com.bootcamp.entities.Phase;
-import com.bootcamp.entities.Projet;
-import com.bootcamp.helpers.ProjetStatHelper;
+import com.bootcamp.helpers.PhaseWS;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -17,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +22,6 @@ import javax.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -56,9 +49,9 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project step", notes = "Create a new project step")
-    public ResponseEntity<Phase> createPhase(@RequestBody Phase phase) throws SQLException {
-       Phase result = projetService.createPhase( phase );
-       return new ResponseEntity<>( result,HttpStatus.OK );
+    public ResponseEntity<PhaseWS> createPhase(@RequestBody Phase phase) throws SQLException {
+        PhaseWS result = projetService.createPhase(phase);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     /**
@@ -70,9 +63,9 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of phases", notes = "Get list of phases")
-    public ResponseEntity<List<Phase>> findAllPhases() throws Exception {
+    public ResponseEntity<List<PhaseWS>> findAllPhases() throws Exception {
         HttpStatus httpStatus = null;
-        List<Phase> phases = projetService.readAllPhases(request);
+        List<PhaseWS> phases = projetService.readAllPhases(request);
         httpStatus = HttpStatus.OK;
         return new ResponseEntity<>(phases, httpStatus);
     }
@@ -86,9 +79,9 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a phase", notes = "Read a phase")
-    public ResponseEntity<Phase> readPhase(@PathVariable("id") int id) {
+    public ResponseEntity<PhaseWS> readPhase(@PathVariable("id") int id) {
 
-        Phase phase = new Phase();
+        PhaseWS phase = new PhaseWS();
         HttpStatus httpStatus = null;
 
         try {
@@ -118,7 +111,8 @@ public class PhaseController {
     }
 
     /**
-     * Link or undo the link between the given phase (step) and the given project
+     * Link or undo the link between the given phase (step) and the given
+     * project
      *
      * @param idPhase
      * @param idProjet
@@ -128,8 +122,8 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.PUT, value = "/link/{idProjet}/{idPhase}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Add a phase to a projet", notes = "Add a phase to a projet")
-    public ResponseEntity<Phase> addPhaseToProject(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
-        Phase phase = projetService.addPhase(idPhase, idProjet);
+    public ResponseEntity<PhaseWS> addPhaseToProject(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
+        PhaseWS phase = projetService.addPhase(idPhase, idProjet);
         return new ResponseEntity<>(phase, HttpStatus.OK);
     }
 
@@ -144,8 +138,8 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.PUT, value = "/unlink/{idPhase}/{idProjet}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Remove a phase from a projet", notes = "Remove a phase from a projet")
-    public ResponseEntity<Phase> removeProjetFromPhase(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
-        Phase phase = projetService.removePhase(idPhase, idProjet);
+    public ResponseEntity<PhaseWS> removeProjetFromPhase(@PathVariable("idProjet") int idProjet, @PathVariable("idPhase") int idPhase) throws Exception {
+        PhaseWS phase = projetService.removePhase(idPhase, idProjet);
         return new ResponseEntity<>(phase, HttpStatus.OK);
     }
 
@@ -176,8 +170,8 @@ public class PhaseController {
     @ApiOperation(value = "Enable or disable the given phase", notes = "Enable or disable the given phase")
     public ResponseEntity<Void> activerPhase(@PathVariable("idPhase") int idPhase) throws SQLException {
         HttpStatus httpStatus = null;
-        
-        try{
+
+        try {
             projetService.activateOrDesactivatePhase(idPhase);
             httpStatus = HttpStatus.OK;
         } catch (Exception ex) {

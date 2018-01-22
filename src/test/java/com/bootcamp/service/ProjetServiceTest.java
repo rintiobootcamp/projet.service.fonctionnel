@@ -5,6 +5,7 @@ import com.bootcamp.commons.utils.GsonUtils;
 import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
 import com.bootcamp.entities.*;
+import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.services.ProjetService;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -33,13 +34,13 @@ import java.util.List;
 /**
  * Created by darextossa on 12/9/17.
  */
-
 @RunWith(PowerMockRunner.class)
 @WebMvcTest(value = ProjetService.class, secure = false)
 @ContextConfiguration(classes = {Application.class})
-@PrepareForTest({ProjetCRUD.class,PhaseCRUD.class})
+@PrepareForTest({ProjetCRUD.class, PhaseCRUD.class})
 @PowerMockRunnerDelegate(SpringRunner.class)
 public class ProjetServiceTest {
+
     private final Logger LOG = LoggerFactory.getLogger(ProjetServiceTest.class);
 
     @InjectMocks
@@ -52,7 +53,7 @@ public class ProjetServiceTest {
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
         Mockito.
                 when(ProjetCRUD.read()).thenReturn(projets);
-        List<Projet> resultProjets = projetService.readAll(mockRequest);
+        List<ProjetWS> resultProjets = projetService.readAll(mockRequest);
         Assert.assertEquals(projets.size(), resultProjets.size());
         LOG.info(" get all projet test done");
 
@@ -68,8 +69,7 @@ public class ProjetServiceTest {
 
     }
 
-
-        private Projet getProjetById(int id) throws Exception {
+    private Projet getProjetById(int id) throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
         Projet projet = projets.stream().filter(item -> item.getId() == id).findFirst().get();
         return projet;
@@ -77,22 +77,21 @@ public class ProjetServiceTest {
 
     private Projet avancementBudget() throws Exception {
         Projet projet = getProjetById(1);
-        double taux = ( projet.getBudgetPrevisionnel() / projet.getCoutReel() ) ;
+        double taux = (projet.getBudgetPrevisionnel() / projet.getCoutReel());
 
         // ...
         return projet;
     }
 
-    private Projet consommationBudget() throws Exception {
-        Projet projet = getProjetById(1);
-        double taux = ( projet.getConsummedCost() / projet.getCoutReel() ) ;
-
-        return projet;
-    }
-
+//    private Projet consommationBudget() throws Exception {
+//        Projet projet = getProjetById(1);
+//        double taux = (projet.getConsummedCost() / projet.getCoutReel());
+//
+//        return projet;
+//    }
 
     @Test
-    public void createProjet() throws Exception{
+    public void createProjet() throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
         Projet projet = projets.get(1);
 
@@ -101,19 +100,17 @@ public class ProjetServiceTest {
                 when(ProjetCRUD.create(projet)).thenReturn(true);
     }
 
-
-
     @Test
-    public void createPhase() throws Exception{
+    public void createPhase() throws Exception {
         List<Phase> phases = loadDataPhaseFromJsonFile();
         Phase phase = phases.get(1);
         PowerMockito.mockStatic(PhaseCRUD.class);
         Mockito.
-                when( PhaseCRUD.create(phase)).thenReturn(true);
+                when(PhaseCRUD.create(phase)).thenReturn(true);
     }
 
     @Test
-    public void deleteProjet() throws Exception{
+    public void deleteProjet() throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
         Projet projet = projets.get(1);
 
@@ -123,7 +120,7 @@ public class ProjetServiceTest {
     }
 
     @Test
-    public void deletePhase() throws Exception{
+    public void deletePhase() throws Exception {
         List<Phase> phases = loadDataPhaseFromJsonFile();
         Phase phase = phases.get(1);
 
@@ -133,7 +130,7 @@ public class ProjetServiceTest {
     }
 
     @Test
-    public void updateProjet() throws Exception{
+    public void updateProjet() throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
         Projet projet = projets.get(1);
 
@@ -143,7 +140,7 @@ public class ProjetServiceTest {
     }
 
     @Test
-    public void updatePhase() throws Exception{
+    public void updatePhase() throws Exception {
         List<Phase> phases = loadDataPhaseFromJsonFile();
         Phase phase = phases.get(1);
 
@@ -151,8 +148,6 @@ public class ProjetServiceTest {
         Mockito.
                 when(PhaseCRUD.update(phase)).thenReturn(true);
     }
-
-
 
     public File getFile(String relativePath) throws Exception {
 

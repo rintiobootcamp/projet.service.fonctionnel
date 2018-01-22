@@ -3,8 +3,9 @@ package com.bootcamp.controllers;
 import com.bootcamp.application.Application;
 import com.bootcamp.commons.utils.GsonUtils;
 import com.bootcamp.entities.*;
+import com.bootcamp.helpers.ProjetHelper;
 import com.bootcamp.helpers.ProjetStatHelper;
-import com.bootcamp.integration.ProjetControllerIntegrationTest;
+import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.services.ProjetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
@@ -31,7 +32,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -42,11 +42,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Ibrahim@abladon
  */
-
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ProjetController.class, secure = false)
-@ContextConfiguration(classes={Application.class})
+@ContextConfiguration(classes = {Application.class})
 public class ProjetControllerTest {
+
     private static Logger logger = LogManager.getLogger(ProjetControllerTest.class);
 
     @Autowired
@@ -54,13 +54,15 @@ public class ProjetControllerTest {
     @MockBean
     private ProjetService projetService;
 
+    private ProjetHelper helper = new ProjetHelper();
 
     @Test
-    public void getProjets() throws Exception{
-        List<Projet> projets =  loadDataProjetFromJsonFile();
+    public void getProjets() throws Exception {
+        List<Projet> projets = loadDataProjetFromJsonFile();
+        List<ProjetWS> projetWSs = helper.buildListProjetWS(projets);
         System.out.println(projets.size());
         HttpServletRequest mockRequest = Mockito.mock(HttpServletRequest.class);
-        when(projetService.readAll(Mockito.any(HttpServletRequest.class))).thenReturn(projets);
+        when(projetService.readAll(Mockito.any(HttpServletRequest.class))).thenReturn(projetWSs);
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/projets")
@@ -77,34 +79,14 @@ public class ProjetControllerTest {
     }
 
     @Test
-    public void getProjetByIdTest() throws Exception{
+    public void getProjetByIdTest() throws Exception {
         Projet projet = getProjetById(1);
+        ProjetWS projetWS = helper.buildProjetWS(projet);
 
-        when(projetService.read(1)).thenReturn(projet);
+        when(projetService.read(1)).thenReturn(projetWS);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/projets/1")
                 .accept(MediaType.APPLICATION_JSON);
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-
-        MockHttpServletResponse response = result.getResponse();
-
-       logger.debug(response.getContentAsString());
-
-        mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
-    }
-
-    @Test
-    public void createProjetTest() throws Exception{
-        Projet projet = loadDataProjetFromJsonFile().get( 2 );
-
-        when(projetService.create(projet)).thenReturn(projet);
-
-        RequestBuilder requestBuilder =
-                post("/projets")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectToJson(projet));
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
 
@@ -117,13 +99,14 @@ public class ProjetControllerTest {
     }
 
     @Test
-    public void updateProjettest() throws Exception{
-        Projet projet = new Projet();
-        projet.setNom("projet update");
-        when(projetService.update(projet)).thenReturn(true);
+    public void createProjetTest() throws Exception {
+        Projet projet = loadDataProjetFromJsonFile().get(2);
+        ProjetWS projetWS = helper.buildProjetWS(projet);
 
-        RequestBuilder requestBuilder =
-                put("/projets")
+        when(projetService.create(projet)).thenReturn(projetWS);
+
+        RequestBuilder requestBuilder
+                = post("/projets")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectToJson(projet));
 
@@ -135,16 +118,36 @@ public class ProjetControllerTest {
 
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
+    }
+
+    @Test
+    public void updateProjettest() throws Exception {
+        Projet projet = new Projet();
+        projet.setNom("projet update");
+        when(projetService.update(projet)).thenReturn(true);
+
+        RequestBuilder requestBuilder
+                = put("/projets")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectToJson(projet));
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        MockHttpServletResponse response = result.getResponse();
+
+        logger.debug(response.getContentAsString());
+
+        mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
     }
 
     @Test
-    public void countProjetTest() throws Exception{
+    public void countProjetTest() throws Exception {
         int count = loadDataProjetFromJsonFile().size();
         when(projetService.getCountProject()).thenReturn(count);
 
-        RequestBuilder requestBuilder =
-                get("/projets/count")
+        RequestBuilder requestBuilder
+                = get("/projets/count")
                         .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -152,40 +155,38 @@ public class ProjetControllerTest {
         logger.debug(response.getContentAsString());
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
-
     }
 
     @Test
-    public void getProjetStatTest() throws Exception{
+    public void getProjetStatTest() throws Exception {
         int id = 1;
         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
         Projet projet = getProjetById(id);
-        double tauxBA = (projet.getCoutReel() / projet.getBudgetPrevisionnel())*100;
+        double tauxBA = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
         when(projetService.avancementBudget(id)).thenReturn(tauxBA);
-        double tauxFPrive = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel())*100;
+        double tauxFPrive = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;
         when(projetService.avancementFinancementPrive(id)).thenReturn(tauxFPrive);
-        double tauxtFPublic = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel())*100;
+        double tauxtFPublic = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel()) * 100;
         when(projetService.avancementFinancementPublic(id)).thenReturn(tauxtFPublic);
         when(projetService.timeStatistics(id)).thenReturn(projetStatHelper);
-               RequestBuilder requestBuilder =
-                get("/projets/stats/{id}",id)
+        RequestBuilder requestBuilder
+                = get("/projets/stats/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         logger.debug(response.getContentAsString());
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
 
-
     }
 
     @Test
-    public void deleteProjetTest() throws Exception{
+    public void deleteProjetTest() throws Exception {
         int id = 1;
         Projet projet = getProjetById(id);
         when(projetService.delete(id)).thenReturn(true);
 
-        RequestBuilder requestBuilder =
-                delete("/projets/{id}",id)
+        RequestBuilder requestBuilder
+                = delete("/projets/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult result = mockMvc.perform(requestBuilder).andReturn();
@@ -195,7 +196,6 @@ public class ProjetControllerTest {
         logger.debug(response.getContentAsString());
 
         mockMvc.perform(requestBuilder).andExpect(status().isOk());
-
 
     }
 
@@ -211,14 +211,14 @@ public class ProjetControllerTest {
 
         File file = new File(getClass().getClassLoader().getResource(relativePath).toURI());
 
-        if(!file.exists()) {
+        if (!file.exists()) {
             throw new FileNotFoundException("File:" + relativePath);
         }
 
         return file;
     }
 
-    public  List<Projet> getProjectsFromJson() throws Exception {
+    public List<Projet> getProjectsFromJson() throws Exception {
         //TestUtils testUtils = new TestUtils();
         File dataFile = getFile("data-json" + File.separator + "projets.json");
 
@@ -246,7 +246,7 @@ public class ProjetControllerTest {
 
     public Projet getProjetById(int id) throws Exception {
         List<Projet> projets = loadDataProjetFromJsonFile();
-        Projet projet = projets.stream().filter(item->item.getId()==id).findFirst().get();
+        Projet projet = projets.stream().filter(item -> item.getId() == id).findFirst().get();
 
         return projet;
     }

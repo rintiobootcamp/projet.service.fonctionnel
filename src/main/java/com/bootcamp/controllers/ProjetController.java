@@ -3,9 +3,9 @@ package com.bootcamp.controllers;
 import com.bootcamp.commons.enums.EtatProjet;
 import com.bootcamp.commons.exceptions.DatabaseException;
 import com.bootcamp.commons.ws.constants.CommonsWsConstants;
-import com.bootcamp.entities.Phase;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.helpers.ProjetStatHelper;
+import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.services.ProjetService;
 import com.bootcamp.version.ApiVersions;
 import io.swagger.annotations.Api;
@@ -28,7 +28,6 @@ import javax.validation.Valid;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -56,17 +55,18 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project", notes = "Create a new project")
-    public ResponseEntity<Projet> create(@RequestBody Projet projet) throws SQLException {
+    public ResponseEntity<ProjetWS> create(@RequestBody Projet projet) throws SQLException {
 
         HttpStatus httpStatus = null;
+        ProjetWS projetWS = null;
 
         try {
-            projet = projetService.create(projet);
+            projetWS = projetService.create(projet);
             httpStatus = HttpStatus.OK;
         } catch (SQLException ex) {
             Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return new ResponseEntity<Projet>(projet, httpStatus);
+        return new ResponseEntity<>(projetWS, httpStatus);
     }
 
     /**
@@ -78,11 +78,11 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get list of projects", notes = "Get list of projects")
-    public ResponseEntity<List<Projet>> findAll() throws Exception {
+    public ResponseEntity<List<ProjetWS>> findAll() throws Exception {
         HttpStatus httpStatus = null;
-        List<Projet> projets = projetService.readAll(request);
+        List<ProjetWS> projets = projetService.readAll(request);
         httpStatus = HttpStatus.OK;
-        return new ResponseEntity<List<Projet>>(projets, httpStatus);
+        return new ResponseEntity<>(projets, httpStatus);
     }
 
     /**
@@ -94,9 +94,9 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<Projet> read(@PathVariable("id") int id) {
+    public ResponseEntity<ProjetWS> read(@PathVariable("id") int id) {
 
-        Projet projet = new Projet();
+        ProjetWS projet = new ProjetWS();
         HttpStatus httpStatus = null;
 
         try {
@@ -107,7 +107,7 @@ public class ProjetController {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         }
 
-        return new ResponseEntity<Projet>(projet, httpStatus);
+        return new ResponseEntity<>(projet, httpStatus);
     }
 
     /**
@@ -189,11 +189,7 @@ public class ProjetController {
         } catch (SQLException ex) {
             Logger.getLogger(ProjetController.class.getName()).log(Level.SEVERE, null, ex);
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (DatabaseException e) {
+        } catch (IllegalAccessException | InvocationTargetException | DatabaseException e) {
             e.printStackTrace();
         }
 
@@ -213,10 +209,10 @@ public class ProjetController {
     @ApiOperation(value = "Change the state of the project", notes = "Change the state of the project")
     public ResponseEntity<Void> setEtat(@PathVariable("idProjet") int idProjet, @PathVariable("etat") String etat) throws SQLException {
         HttpStatus httpStatus = null;
-        
+
         EtatProjet etatProjet = EtatProjet.valueOf(etat);
 
-        try{
+        try {
             projetService.changeProjectstate(idProjet, etatProjet);
             httpStatus = HttpStatus.OK;
         } catch (Exception ex) {
@@ -226,8 +222,8 @@ public class ProjetController {
 
         return new ResponseEntity<>(httpStatus);
     }
-    
-        /**
+
+    /**
      * Enable or disable the given phase (step)
      *
      * @param idPhase
@@ -239,8 +235,8 @@ public class ProjetController {
     @ApiOperation(value = "Enable or disable the given phase", notes = "Enable or disable the given phase")
     public ResponseEntity<Void> activerPhase(@PathVariable("idPhase") int idPhase) throws SQLException {
         HttpStatus httpStatus = null;
-        
-        try{
+
+        try {
             projetService.activateOrDesactivatePhase(idPhase);
             httpStatus = HttpStatus.OK;
         } catch (Exception ex) {

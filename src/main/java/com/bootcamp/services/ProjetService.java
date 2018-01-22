@@ -18,7 +18,11 @@ import com.bootcamp.entities.Projet;
 import com.bootcamp.entities.Region;
 
 import com.bootcamp.helpers.PhaseStatHelper;
+import com.bootcamp.helpers.PhaseWS;
+import com.bootcamp.helpers.ProjetHelper;
 import com.bootcamp.helpers.ProjetStatHelper;
+import com.bootcamp.helpers.ProjetWS;
+import com.bootcamp.helpers.RegionWS;
 import java.io.IOException;
 import org.springframework.stereotype.Component;
 
@@ -31,13 +35,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
-/**
- * Created by darextossa on 11/27/17.
- */
 @Component
 public class ProjetService implements DatabaseConstants {
-
+    
     NotificationClient client;
+    ProjetHelper helper = new ProjetHelper();
 
     /**
      * Loading Projet Web Service client
@@ -54,7 +56,7 @@ public class ProjetService implements DatabaseConstants {
      * @return projet
      * @throws SQLException
      */
-    public Projet create(Projet projet) throws SQLException {
+    public ProjetWS create(Projet projet) throws SQLException {
         ProjetCRUD.create(projet);
         NotificationInput input = new NotificationInput();
         input.setAction(Action.NEW_PROJECT);
@@ -66,7 +68,7 @@ public class ProjetService implements DatabaseConstants {
         } catch (IOException ex) {
             Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return projet;
+        return helper.buildProjetWS(projet);
     }
 
     /**
@@ -76,9 +78,9 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Phase createPhase(Phase phase) throws SQLException {
+    public PhaseWS createPhase(Phase phase) throws SQLException {
         PhaseCRUD.create(phase);
-        return phase;
+        return helper.buildPhaseWS(phase);
     }
 
     /**
@@ -88,11 +90,11 @@ public class ProjetService implements DatabaseConstants {
      * @return project
      * @throws SQLException
      */
-    public Projet read(int id) throws SQLException {
+    public ProjetWS read(int id) throws SQLException {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
         Projet projet = ProjetCRUD.read(criterias).get(0);
-        return projet;
+        return helper.buildProjetWS(projet);
     }
 
     /**
@@ -102,11 +104,11 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Phase readPhase(int id) throws SQLException {
+    public PhaseWS readPhase(int id) throws SQLException {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
         Phase phase = PhaseCRUD.read(criterias).get(0);
-        return phase;
+        return helper.buildPhaseWS(phase);
     }
 
     /**
@@ -139,7 +141,7 @@ public class ProjetService implements DatabaseConstants {
      * @throws Exception
      */
     public boolean delete(int id) throws Exception {
-        Projet projet = read(id);
+        Projet projet = helper.buildProjet(read(id));
         return ProjetCRUD.delete(projet);
     }
 
@@ -151,7 +153,7 @@ public class ProjetService implements DatabaseConstants {
      * @throws Exception
      */
     public boolean deletePhase(int id) throws Exception {
-        Phase phase = readPhase(id);
+        Phase phase = helper.buildPhase(readPhase(id));
         return PhaseCRUD.delete(phase);
     }
 
@@ -163,15 +165,14 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Phase addPhase(int idPhase, int idProjet) throws Exception {
-        Phase phase = this.readPhase(idPhase);
-        Projet projet = this.read(idProjet);
-        System.out.println("Avant "+projet.getPhases().size());
+    public PhaseWS addPhase(int idPhase, int idProjet) throws Exception {
+        Phase phase = helper.buildPhase(this.readPhase(idPhase));
+        Projet projet = helper.buildProjet(this.read(idProjet));
         projet.getPhases().add(phase);
-
+        
         this.update(projet);
-        System.out.println("Après "+projet.getPhases().size());
-        return phase;
+        System.out.println("Après " + projet.getPhases().size());
+        return helper.buildPhaseWS(phase);
     }
 
     /**
@@ -182,20 +183,20 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Phase removePhase(int idPhase, int idProjet) throws Exception {
-        Phase phase = this.readPhase(idPhase);
-        Projet projet = this.read(idProjet);
+    public PhaseWS removePhase(int idPhase, int idProjet) throws Exception {
+        Phase phase = helper.buildPhase(this.readPhase(idPhase));
+        Projet projet = helper.buildProjet(this.read(idProjet));
         int index = -1;
         for (Phase ph : projet.getPhases()) {
-            if (ph.getId()==phase.getId()){
+            if (ph.getId() == phase.getId()) {
                 index = projet.getPhases().indexOf(ph);
             }
         }
         projet.getPhases().remove(index);
         this.update(projet);
-        return phase;
+        return helper.buildPhaseWS(phase);
     }
-    
+
     /**
      * Link the given region (location) to the given project
      *
@@ -204,12 +205,12 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Projet addRegion(String nomRegion, int idProjet) throws Exception {
-        Region region = this.readRegion(nomRegion);
-        Projet projet = this.read(idProjet);
+    public ProjetWS addRegion(String nomRegion, int idProjet) throws Exception {
+        Region region = helper.buildRegion(this.readRegion(nomRegion));
+        Projet projet = helper.buildProjet(this.read(idProjet));
         projet.getRegions().add(region);
         this.update(projet);
-        return projet;
+        return helper.buildProjetWS(projet);
     }
 
     /**
@@ -220,21 +221,21 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public Projet removeRegion(String nomRegion, int idProjet) throws Exception {
-        Region region = this.readRegion(nomRegion);
-        Projet projet = this.read(idProjet);
+    public ProjetWS removeRegion(String nomRegion, int idProjet) throws Exception {
+        Region region = helper.buildRegion(this.readRegion(nomRegion));
+        Projet projet = helper.buildProjet(this.read(idProjet));
         int index = -1;
         
         for (Region rg : projet.getRegions()) {
-            if (rg.getId()==region.getId()){
+            if (rg.getId() == region.getId()) {
                 index = projet.getRegions().indexOf(rg);
                 projet.getRegions().remove(index);
                 break;
             }
         }
-
+        
         this.update(projet);
-        return projet;
+        return helper.buildProjetWS(projet);
     }
 
     /**
@@ -247,7 +248,7 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<Projet> readAll(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<ProjetWS> readAll(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Projet> projets = null;
@@ -260,9 +261,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             projets = ProjetCRUD.read(criterias, fields);
         }
-
-        return projets;
-
+        
+        return helper.buildListProjetWS(projets);
+        
     }
 
     /**
@@ -275,7 +276,7 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<Phase> readAllPhases(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<PhaseWS> readAllPhases(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Phase> phases = null;
@@ -288,9 +289,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             phases = PhaseCRUD.read(criterias, fields);
         }
-
-        return phases;
-
+        
+        return helper.buildListPhaseWS(phases);
+        
     }
 
     /**
@@ -309,12 +310,12 @@ public class ProjetService implements DatabaseConstants {
      * @param idProjet
      * @return phases list
      */
-    public List<Phase> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
-
+    public List<PhaseWS> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+        
         Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
         criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
-
+        
         List<Phase> phases = PhaseCRUD.read(criterias);
         List<Phase> phasesActuelles = new ArrayList<>();
         phasesActuelles.clear();
@@ -322,7 +323,7 @@ public class ProjetService implements DatabaseConstants {
             if (phase.getProjet().getId() == idProjet) {
                 phasesActuelles.add(phase);
             }
-
+            
         }
 //
 //    List<Phase> phases = PhaseCRUD.read();
@@ -332,12 +333,12 @@ public class ProjetService implements DatabaseConstants {
 //                phaseActuelles.add(phase);
 //        }
 
-        return phasesActuelles;
+        return helper.buildListPhaseWS(phasesActuelles);
     }
 
     //@Bignon: Activate or desactivate phase
     public void activateOrDesactivatePhase(int idPhase) throws SQLException {
-        Phase phase = readPhase(idPhase);
+        Phase phase = helper.buildPhase(readPhase(idPhase));
         if (phase.isActif()) {
             phase.setActif(false);
         } else {
@@ -347,7 +348,7 @@ public class ProjetService implements DatabaseConstants {
             } catch (Exception ex) {
                 Logger.getLogger(ProjetService.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
             NotificationInput input = new NotificationInput();
             input.setAction(Action.UPDATE_PROJECT_PHASE);
             input.setEntityId(phase.getProjet().getId());
@@ -355,7 +356,7 @@ public class ProjetService implements DatabaseConstants {
             input.setTitre(phase.getProjet().getNom());
             input.setAttributName("phase");
             input.setCurrentVersion(phase.getNom());
-
+            
             try {
                 client.sendNotification(input);
             } catch (IOException ex) {
@@ -366,77 +367,77 @@ public class ProjetService implements DatabaseConstants {
 
     //@Bignon : calcul du taux d'avancement par budget d'un projet
     public double avancementBudget(int id) throws SQLException {
-        Projet projet = read(id);
+        Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
-
+        
         return taux;
     }
 
     //@Bignon : calcul du taux de consommation du budget d'un projet
     public double consommationBudget(int id) throws SQLException {
-        Projet projet = read(id);
-        double taux = (projet.getConsummedCost() / projet.getBudgetPrevisionnel()) * 100;
-
+        Projet projet = helper.buildProjet(read(id));
+        double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
+        
         return taux;
     }
-
+    
     public double avancementFinancementPrive(int id) throws SQLException {
-        Projet projet = read(id);
+        Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;
-
+        
         return taux;
     }
 
     //@bignon: calcul du taux de financement Public
     public double avancementFinancementPublic(int id) throws SQLException {
-        Projet projet = read(id);
+        Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel()) * 100;
-
+        
         return taux;
     }
-    //@bignon: temp de retard ou d'avancement de la phase
 
+    //@bignon: temp de retard ou d'avancement de la phase
     public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
-
+        
         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
-
-        List<Phase> phasesActuelles = getPhasesActuelles(id);
-        phasesActuelles.add(readPhase(1));
-
+        
+        List<Phase> phasesActuelles = helper.buildListPhase(getPhasesActuelles(id));
+        phasesActuelles.add(helper.buildPhase(readPhase(1)));
+        
         for (int i = 0; i < phasesActuelles.size(); i++) {
             PhaseStatHelper phaseStatHelper = new PhaseStatHelper();
             Phase phaseActuelle = phasesActuelles.get(i);
             long tpD = Math.subtractExact(phaseActuelle.getDateDebutPrevisionnel(), phaseActuelle.getDateDebutReel());
             long tpF = Math.subtractExact(phaseActuelle.getDateFinPrevisionnel(), phaseActuelle.getDateFinReel());
-
+            
             phaseStatHelper.setIdPhase(phaseActuelle.getId());
             phaseStatHelper.setNomPhase(phaseActuelle.getNom());
-
+            
             if (tpD >= 0) {
                 phaseStatHelper.setTempAvanceDateDebut(tpD);
             } else {
                 phaseStatHelper.setTempRetardDateDebut(-tpD);
             }
-
+            
             if (tpF >= 0) {
                 phaseStatHelper.setTempAvanceDateFin(tpF);
             } else {
                 phaseStatHelper.setTempRetardDateDebutFin(-tpF);
             }
-
+            
             phaseStatHelpers.add(phaseStatHelper);
-
+            
         }
         projetStatHelper.setPhaseStatHelperList(phaseStatHelpers);
         return projetStatHelper;
     }
-
+    
     public void changeProjectstate(int idProjet, EtatProjet etatProjet) throws Exception {
-        Projet projet = read(idProjet);
+        Projet projet = helper.buildProjet(read(idProjet));
         projet.setEtat(etatProjet);
         update(projet);
-
+        
         NotificationInput input = new NotificationInput();
         input.setAction(Action.UPDATE_PROJECT_ETAT);
         input.setEntityId(projet.getId());
@@ -444,9 +445,9 @@ public class ProjetService implements DatabaseConstants {
         input.setTitre(projet.getNom());
         input.setAttributName("etat");
         input.setCurrentVersion(etatProjet.name());
-
+        
         System.out.println(input.getTitre());
-
+        
         try {
             client.sendNotification(input);
         } catch (IOException ex) {
@@ -461,19 +462,19 @@ public class ProjetService implements DatabaseConstants {
         }
         return false;
     }
-    
-        /**
+
+    /**
      * Insert the given region (step) in the database
      *
      * @param region
      * @return region
      * @throws SQLException
      */
-    public Region createRegion(Region region) throws SQLException {
+    public RegionWS createRegion(Region region) throws SQLException {
         RegionCRUD.create(region);
-        return region;
+        return helper.buildRegionWS(region);
     }
-    
+
     /**
      * Get a region by its id
      *
@@ -481,13 +482,13 @@ public class ProjetService implements DatabaseConstants {
      * @return region
      * @throws SQLException
      */
-    public Region readRegion(String nom) throws SQLException {
+    public RegionWS readRegion(String nom) throws SQLException {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("nom", "=", nom));
         Region region = RegionCRUD.read(criterias).get(0);
-        return region;
+        return helper.buildRegionWS(region);
     }
-    
+
     /**
      * Update the given region in the database
      *
@@ -498,7 +499,7 @@ public class ProjetService implements DatabaseConstants {
     public boolean updateRegion(Region region) throws Exception {
         return RegionCRUD.update(region);
     }
-    
+
     /**
      * Delete a region (step) by its id
      *
@@ -507,11 +508,11 @@ public class ProjetService implements DatabaseConstants {
      * @throws Exception
      */
     public boolean deleteRegion(String nom) throws Exception {
-        Region region = readRegion(nom);
+        Region region = helper.buildRegion(readRegion(nom));
         return RegionCRUD.delete(region);
     }
-	
-	/**
+
+    /**
      * Get all the regions of the database matching the request
      *
      * @param request
@@ -521,7 +522,7 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<Region> readAllRegions(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<RegionWS> readAllRegions(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Region> regions = null;
@@ -534,9 +535,9 @@ public class ProjetService implements DatabaseConstants {
         } else {
             regions = RegionCRUD.read(criterias, fields);
         }
-
-        return regions;
-
+        
+        return helper.buildListRegionWS(regions);
+        
     }
-
+    
 }

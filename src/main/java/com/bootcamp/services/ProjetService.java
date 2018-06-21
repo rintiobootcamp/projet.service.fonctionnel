@@ -24,6 +24,8 @@ import com.bootcamp.helpers.ProjetStatHelper;
 import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.helpers.RegionWS;
 import java.io.IOException;
+
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,8 @@ import javax.annotation.PostConstruct;
 @Component
 public class ProjetService implements DatabaseConstants {
 
+    List<Projet> projets = null;
+    List<Phase> phases = null;
     NotificationClient client;
     ProjetHelper helper = new ProjetHelper();
 
@@ -47,6 +51,12 @@ public class ProjetService implements DatabaseConstants {
     @PostConstruct
     public void init() {
         client = new NotificationClient();
+        try {
+            this.projets = ProjetCRUD.read();
+            this.phases = PhaseCRUD.read();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -260,9 +270,8 @@ public class ProjetService implements DatabaseConstants {
     public List<ProjetWS> readAll(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
-        List<Projet> projets = null;
         if (criterias == null && fields == null) {
-            projets = ProjetCRUD.read();
+            projets = this.projets
         } else if (criterias != null && fields == null) {
             projets = ProjetCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -288,9 +297,8 @@ public class ProjetService implements DatabaseConstants {
     public List<PhaseWS> readAllPhases(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
-        List<Phase> phases = null;
         if (criterias == null && fields == null) {
-            phases = PhaseCRUD.read();
+            phases = this.phases;
         } else if (criterias != null && fields == null) {
             phases = PhaseCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -548,5 +556,17 @@ public class ProjetService implements DatabaseConstants {
         return helper.buildListRegionWS(regions);
 
     }
+
+    @Scheduled(fixedRate = 750000)
+    public List<Projet> getAllProjetInit(){
+        try {
+            this.projets = ProjetCRUD.read();
+            this.phases = PhaseCRUD.read();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return this.projets;
+    }
+
 
 }

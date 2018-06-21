@@ -101,9 +101,9 @@ public class ProjetService implements DatabaseConstants {
      * @throws SQLException
      */
     public ProjetWS read(int id) throws SQLException {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("id", "=", id));
-        Projet projet = ProjetCRUD.read(criterias).get(0);
+//        Criterias criterias = new Criterias();
+//        criterias.addCriteria(new Criteria("id", "=", id));
+        Projet projet = this.projets.stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildProjetWS(projet);
     }
 
@@ -117,7 +117,7 @@ public class ProjetService implements DatabaseConstants {
     public PhaseWS readPhase(int id) throws SQLException {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-        Phase phase = PhaseCRUD.read(criterias).get(0);
+        Phase phase = this.phases.stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildPhaseWS(phase);
     }
 
@@ -270,6 +270,7 @@ public class ProjetService implements DatabaseConstants {
     public List<ProjetWS> readAll(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
+        List<Projet> projets = new ArrayList<>();
         if (criterias == null && fields == null) {
             projets = this.projets
         } else if (criterias != null && fields == null) {
@@ -297,6 +298,7 @@ public class ProjetService implements DatabaseConstants {
     public List<PhaseWS> readAllPhases(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
+        List<Phase> phases = new ArrayList<>();
         if (criterias == null && fields == null) {
             phases = this.phases;
         } else if (criterias != null && fields == null) {

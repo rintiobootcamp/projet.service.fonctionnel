@@ -14,6 +14,7 @@ import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
 import com.bootcamp.crud.RegionCRUD;
 import com.bootcamp.entities.Phase;
+import com.bootcamp.entities.Pilier;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.entities.Region;
 
@@ -25,6 +26,8 @@ import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.helpers.RegionWS;
 import java.io.IOException;
 
+import com.rintio.elastic.client.ElasticClient;
+import org.modelmapper.ModelMapper;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -38,12 +41,13 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 
 @Component
-public class ProjetService implements DatabaseConstants {
-
-    List<Projet> projets = null;
-    List<Phase> phases = null;
+public class ProjetService {
+    ElasticClient elasticClient;
     NotificationClient client;
     ProjetHelper helper = new ProjetHelper();
+    public ProjetService(){
+        elasticClient = new ElasticClient();
+    }
 
     /**
      * Loading Projet Web Service client
@@ -51,12 +55,8 @@ public class ProjetService implements DatabaseConstants {
     @PostConstruct
     public void init() {
         client = new NotificationClient();
-        try {
-            this.projets = ProjetCRUD.read();
-            this.phases = PhaseCRUD.read();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+
     }
 
     /**
@@ -100,10 +100,10 @@ public class ProjetService implements DatabaseConstants {
      * @return project
      * @throws SQLException
      */
-    public ProjetWS read(int id) throws SQLException {
-//        Criterias criterias = new Criterias();
-//        criterias.addCriteria(new Criteria("id", "=", id));
-        Projet projet = this.projets.stream().filter(t->t.getId()==id).findFirst().get();
+    public ProjetWS read(int id) throws Exception {
+        Criterias criterias = new Criterias();
+        criterias.addCriteria(new Criteria("id", "=", id));
+        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildProjetWS(projet);
     }
 
@@ -114,10 +114,10 @@ public class ProjetService implements DatabaseConstants {
      * @return phase
      * @throws SQLException
      */
-    public PhaseWS readPhase(int id) throws SQLException {
+    public PhaseWS readPhase(int id) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-        Phase phase = this.phases.stream().filter(t->t.getId()==id).findFirst().get();
+        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildPhaseWS(phase);
     }
 
@@ -252,7 +252,6 @@ public class ProjetService implements DatabaseConstants {
                 break;
             }
         }
-
         this.update(projet);
         return helper.buildProjetWS(projet);
     }
@@ -267,12 +266,12 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<ProjetWS> readAll(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<ProjetWS> readAll(HttpServletRequest request) throws SQLException, Exception, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Projet> projets = new ArrayList<>();
         if (criterias == null && fields == null) {
-            projets = this.projets
+            projets = getAllProjet();
         } else if (criterias != null && fields == null) {
             projets = ProjetCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -285,6 +284,58 @@ public class ProjetService implements DatabaseConstants {
 
     }
 
+    public List<Projet> getAllProjet() throws Exception{
+         elasticClient = new ElasticClient();
+        List<Object> objects = elasticClient.getAllObject("projets");
+        ModelMapper modelMapper = new ModelMapper();
+        List<Projet> rest = new ArrayList<>();
+        for(Object obj:objects){
+            rest.add(modelMapper.map(obj,Projet.class));
+        }
+        return rest;
+    }
+
+//    public void createProjetIndex(Projet projet) throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+//        elasticClient.creerIndexObject("projets","projet",projet,projet.getId());
+//
+//    }
+
+    public List<Phase> getAllPhase() throws Exception{
+         elasticClient = new ElasticClient();
+        List<Object> objects = elasticClient.getAllObject("phases");
+        ModelMapper modelMapper = new ModelMapper();
+        List<Phase> rest = new ArrayList<>();
+        for(Object obj:objects){
+            rest.add(modelMapper.map(obj,Phase.class));
+        }
+        return rest;
+    }
+
+//    public void createPhaseIndex(Phase phase) throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+//        elasticClient.creerIndexObject("phases","phase",phase,phase.getId());
+//
+//    }
+
+
+    public List<Region> getAllRegion() throws Exception{
+         elasticClient = new ElasticClient();
+        List<Object> objects = elasticClient.getAllObject("regions");
+        ModelMapper modelMapper = new ModelMapper();
+        List<Region> rest = new ArrayList<>();
+        for(Object obj:objects){
+            rest.add(modelMapper.map(obj,Region.class));
+        }
+        return rest;
+    }
+//
+//    public void createRegionIndex(Region region) throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+//        elasticClient.creerIndexObject("regions","region",region,region.getId());
+//
+//    }
+
     /**
      * Get all the phases of the database matching the request
      *
@@ -295,12 +346,12 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<PhaseWS> readAllPhases(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<PhaseWS> readAllPhases(HttpServletRequest request) throws Exception, IllegalAccessException, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Phase> phases = new ArrayList<>();
         if (criterias == null && fields == null) {
-            phases = this.phases;
+            phases = getAllPhase();
         } else if (criterias != null && fields == null) {
             phases = PhaseCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -319,8 +370,8 @@ public class ProjetService implements DatabaseConstants {
      * @return count
      * @throws SQLException
      */
-    public int getCountProject() throws SQLException {
-        return ProjetCRUD.read().size();
+    public int getCountProject() throws Exception {
+        return getAllProjet().size();
     }
 
     /**
@@ -356,7 +407,7 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@Bignon: Activate or desactivate phase
-    public void activateOrDesactivatePhase(int idPhase) throws SQLException {
+    public void activateOrDesactivatePhase(int idPhase) throws Exception {
         Phase phase = helper.buildPhase(readPhase(idPhase));
         if (phase.isActif()) {
             phase.setActif(false);
@@ -385,7 +436,7 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@Bignon : calcul du taux d'avancement par budget d'un projet
-    public double avancementBudget(int id) throws SQLException {
+    public double avancementBudget(int id) throws Exception {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
 
@@ -393,14 +444,14 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@Bignon : calcul du taux de consommation du budget d'un projet
-    public double consommationBudget(int id) throws SQLException {
+    public double consommationBudget(int id) throws Exception {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getCoutReel() / projet.getBudgetPrevisionnel()) * 100;
 
         return taux;
     }
 
-    public double avancementFinancementPrive(int id) throws SQLException {
+    public double avancementFinancementPrive(int id) throws Exception {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPriveReel() / projet.getFinancementPrivePrevisionnel()) * 100;
 
@@ -408,7 +459,7 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@bignon: calcul du taux de financement Public
-    public double avancementFinancementPublic(int id) throws SQLException {
+    public double avancementFinancementPublic(int id) throws Exception {
         Projet projet = helper.buildProjet(read(id));
         double taux = (projet.getFinancementPublicReel() / projet.getFinancementPublicPrevisionnel()) * 100;
 
@@ -416,7 +467,7 @@ public class ProjetService implements DatabaseConstants {
     }
 
     //@bignon: temp de retard ou d'avancement de la phase
-    public ProjetStatHelper timeStatistics(int id) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public ProjetStatHelper timeStatistics(int id) throws SQLException, Exception, DatabaseException, InvocationTargetException {
         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
 
         List<PhaseStatHelper> phaseStatHelpers = new ArrayList<>();
@@ -501,10 +552,11 @@ public class ProjetService implements DatabaseConstants {
      * @return region
      * @throws SQLException
      */
-    public RegionWS readRegion(String nom) throws SQLException {
+    public RegionWS readRegion(String nom) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("nom", "=", nom));
-        Region region = RegionCRUD.read(criterias).get(0);
+//        Region region = RegionCRUD.read(criterias).get(0);
+        Region region = getAllRegion().stream().filter(t->t.getNom()==nom).findFirst().get();
         return helper.buildRegionWS(region);
     }
 
@@ -541,12 +593,12 @@ public class ProjetService implements DatabaseConstants {
      * @throws DatabaseException
      * @throws InvocationTargetException
      */
-    public List<RegionWS> readAllRegions(HttpServletRequest request) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<RegionWS> readAllRegions(HttpServletRequest request) throws SQLException, Exception, DatabaseException, InvocationTargetException {
         Criterias criterias = RequestParser.getCriterias(request);
         List<String> fields = RequestParser.getFields(request);
         List<Region> regions = null;
         if (criterias == null && fields == null) {
-            regions = RegionCRUD.read();
+            regions = getAllRegion();
         } else if (criterias != null && fields == null) {
             regions = RegionCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -559,16 +611,6 @@ public class ProjetService implements DatabaseConstants {
 
     }
 
-    @Scheduled(fixedRate = 750000)
-    public List<Projet> getAllProjetInit(){
-        try {
-            this.projets = ProjetCRUD.read();
-            this.phases = PhaseCRUD.read();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return this.projets;
-    }
 
 
 }

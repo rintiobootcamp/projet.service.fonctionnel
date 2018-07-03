@@ -94,7 +94,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a projet", notes = "Read a projet")
-    public ResponseEntity<ProjetWS> read(@PathVariable("id") int id) {
+    public ResponseEntity<ProjetWS> read(@PathVariable("id") int id)  throws Exception{
 
         ProjetWS projet = new ProjetWS();
         HttpStatus httpStatus = null;
@@ -151,7 +151,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET, value = "/count")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get count of projects", notes = "Get count of projects")
-    public ResponseEntity<HashMap<String, Integer>> count() throws SQLException {
+    public ResponseEntity<HashMap<String, Integer>> count() throws Exception {
         HttpStatus httpStatus = null;
         int count = projetService.getCountProject();
         HashMap<String, Integer> map = new HashMap<>();
@@ -169,7 +169,7 @@ public class ProjetController {
     @RequestMapping(method = RequestMethod.GET, value = "/stats/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Get statistics of a project", notes = "Get statistics of a project")
-    public ResponseEntity<ProjetStatHelper> statistics(@PathVariable("id") int id) throws SQLException {
+    public ResponseEntity<ProjetStatHelper> statistics(@PathVariable("id") int id) throws Exception {
         HttpStatus httpStatus = null;
         ProjetStatHelper projetStatHelper = new ProjetStatHelper();
 

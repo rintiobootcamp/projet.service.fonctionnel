@@ -79,7 +79,7 @@ public class PhaseController {
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a phase", notes = "Read a phase")
-    public ResponseEntity<PhaseWS> readPhase(@PathVariable("id") int id) {
+    public ResponseEntity<PhaseWS> readPhase(@PathVariable("id") int id) throws Exception{
 
         PhaseWS phase = new PhaseWS();
         HttpStatus httpStatus = null;

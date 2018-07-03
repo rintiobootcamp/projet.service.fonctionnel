@@ -75,7 +75,7 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.GET, value = "/{nom}")
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Read a region", notes = "Read a region")
-    public ResponseEntity<RegionWS> readRegion(@PathVariable("nom") String nom) {
+    public ResponseEntity<RegionWS> readRegion(@PathVariable("nom") String nom) throws Exception {
 
         RegionWS region = new RegionWS();
         HttpStatus httpStatus = null;

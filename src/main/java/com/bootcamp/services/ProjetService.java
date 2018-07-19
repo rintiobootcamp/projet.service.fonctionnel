@@ -49,6 +49,35 @@ public class ProjetService {
         elasticClient = new ElasticClient();
     }
 
+    public boolean createIndexProjet()throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+        List<Projet> projets = ProjetCRUD.read();
+        for (Projet projet : projets){
+            elasticClient.creerIndexObjectNative("projets","projet",projet,projet.getId());
+//            LOG.info("projet "+projet.getNom()+" created");
+        }
+        return true;
+    }
+
+    public boolean createIndexPhase()throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+        List<Phase> Phases = PhaseCRUD.read();
+        for (Phase Phase : Phases){
+            elasticClient.creerIndexObjectNative("phases","phase",Phase,Phase.getId());
+//            LOG.info("Phase "+Phase.getNom()+" created");
+        }
+        return true;
+    }
+
+    public boolean createIndexRegion()throws Exception{
+//        ElasticClient elasticClient = new ElasticClient();
+        List<Region> regions = RegionCRUD.read();
+        for (Region region : regions){
+            elasticClient.creerIndexObjectNative("regions","region",region,region.getId());
+//            LOG.info("region "+region.getNom()+" created");
+        }
+        return  true;
+    }
     /**
      * Loading Projet Web Service client
      */

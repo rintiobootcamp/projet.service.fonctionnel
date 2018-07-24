@@ -30,7 +30,7 @@ import javax.validation.Validator;
 import java.util.Locale;
 
 @SpringBootApplication
-@EnableEurekaClient
+//@EnableEurekaClient
 @Configuration
 @ComponentScan({"com.bootcamp"})
 @PropertySources({

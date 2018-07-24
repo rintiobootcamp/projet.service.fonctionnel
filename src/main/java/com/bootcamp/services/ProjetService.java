@@ -132,7 +132,8 @@ public class ProjetService {
     public ProjetWS read(int id) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
+        Projet projet = ProjetCRUD.read(criterias).get(0);
+//        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildProjetWS(projet);
     }
 
@@ -146,7 +147,8 @@ public class ProjetService {
     public PhaseWS readPhase(int id) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
+//        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
+        Phase phase = PhaseCRUD.read(criterias).get(0);
         return helper.buildPhaseWS(phase);
     }
 

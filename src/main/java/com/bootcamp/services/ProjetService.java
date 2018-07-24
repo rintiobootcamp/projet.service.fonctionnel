@@ -45,7 +45,8 @@ public class ProjetService {
     ElasticClient elasticClient;
     NotificationClient client;
     ProjetHelper helper = new ProjetHelper();
-    public ProjetService(){
+    @PostConstruct
+    public void ProjetService(){
         elasticClient = new ElasticClient();
     }
 

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 @Component
@@ -133,8 +134,8 @@ public class ProjetService {
     public ProjetWS read(int id) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-        Projet projet = ProjetCRUD.read(criterias).get(0);
-//        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
+//        Projet projet = ProjetCRUD.read(criterias).get(0);
+        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
         return helper.buildProjetWS(projet);
     }
 
@@ -148,8 +149,8 @@ public class ProjetService {
     public PhaseWS readPhase(int id) throws Exception {
         Criterias criterias = new Criterias();
         criterias.addCriteria(new Criteria("id", "=", id));
-//        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
-        Phase phase = PhaseCRUD.read(criterias).get(0);
+        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
+//        Phase phase = PhaseCRUD.read(criterias).get(0);
         return helper.buildPhaseWS(phase);
     }
 
@@ -352,7 +353,7 @@ public class ProjetService {
 
 
     public List<Region> getAllRegion() throws Exception{
-         elasticClient = new ElasticClient();
+//         elasticClient = new ElasticClient();
         List<Object> objects = elasticClient.getAllObject("regions");
         ModelMapper modelMapper = new ModelMapper();
         List<Region> rest = new ArrayList<>();
@@ -412,20 +413,20 @@ public class ProjetService {
      * @param idProjet
      * @return phases list
      */
-    public List<PhaseWS> getPhasesActuelles(int idProjet) throws SQLException, IllegalAccessException, DatabaseException, InvocationTargetException {
+    public List<PhaseWS> getPhasesActuelles(int idProjet) throws SQLException, Exception, DatabaseException, InvocationTargetException {
 
         Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
         criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
 
-        List<Phase> phases = PhaseCRUD.read(criterias);
+//        List<Phase> phases = PhaseCRUD.read(criterias);
+        List<Phase> phases = getAllPhase().stream().filter(t->t.isActif()).collect(Collectors.toList());
         List<Phase> phasesActuelles = new ArrayList<>();
         phasesActuelles.clear();
         for (Phase phase : phases) {
             if (phase.isActif()) {
                 phasesActuelles.add(phase);
             }
-
         }
 //
 //    List<Phase> phases = PhaseCRUD.read();

@@ -404,7 +404,7 @@ public class ProjetService {
      * @throws SQLException
      */
     public int getCountProject() throws Exception {
-        return getAllProjet().size();
+        return (int)getAllProjet().stream().count();
     }
 
     /**
@@ -586,10 +586,10 @@ public class ProjetService {
      * @throws SQLException
      */
     public RegionWS readRegion(String nom) throws Exception {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("nom", "=", nom));
+//        Criterias criterias = new Criterias();
+//        criterias.addCriteria(new Criteria("nom", "=", nom));
 //        Region region = RegionCRUD.read(criterias).get(0);
-        Region region = getAllRegion().stream().filter(t->t.getNom()==nom).findFirst().get();
+        Region region = getAllRegion().stream().filter(t->t.getNom().equalsIgnoreCase(nom)).findFirst().get();
         return helper.buildRegionWS(region);
     }
 

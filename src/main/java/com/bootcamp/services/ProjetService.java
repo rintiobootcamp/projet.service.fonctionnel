@@ -1,20 +1,16 @@
 package com.bootcamp.services;
 
 import com.bootcamp.client.NotificationClient;
-import com.bootcamp.commons.constants.DatabaseConstants;
 import com.bootcamp.commons.enums.Action;
 import com.bootcamp.commons.enums.EtatProjet;
 import com.bootcamp.commons.exceptions.DatabaseException;
-import com.bootcamp.commons.models.Criteria;
 import com.bootcamp.commons.models.Criterias;
-import com.bootcamp.commons.models.Rule;
 import com.bootcamp.commons.ws.usecases.pivotone.NotificationInput;
 import com.bootcamp.commons.ws.utils.RequestParser;
 import com.bootcamp.crud.PhaseCRUD;
 import com.bootcamp.crud.ProjetCRUD;
 import com.bootcamp.crud.RegionCRUD;
 import com.bootcamp.entities.Phase;
-import com.bootcamp.entities.Pilier;
 import com.bootcamp.entities.Projet;
 import com.bootcamp.entities.Region;
 
@@ -24,11 +20,11 @@ import com.bootcamp.helpers.ProjetHelper;
 import com.bootcamp.helpers.ProjetStatHelper;
 import com.bootcamp.helpers.ProjetWS;
 import com.bootcamp.helpers.RegionWS;
+
 import java.io.IOException;
 
 import com.rintio.elastic.client.ElasticClient;
 import org.modelmapper.ModelMapper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,49 +42,51 @@ public class ProjetService {
     ElasticClient elasticClient;
     NotificationClient client;
     ProjetHelper helper = new ProjetHelper();
+    private List<Projet> projets;
+    private List<Region> regions;
+    private List<Phase> phases;
+
     @PostConstruct
-    public void ProjetService(){
+    public void ProjetService() {
+        client = new NotificationClient();
         elasticClient = new ElasticClient();
+        this.projets = new ArrayList<>();
+        this.phases = new ArrayList<>();
+        this.regions = new ArrayList<>();
     }
 
-    public boolean createIndexProjet()throws Exception{
+    public boolean createIndexProjet() throws Exception {
 //        ElasticClient elasticClient = new ElasticClient();
         List<Projet> projets = ProjetCRUD.read();
-        for (Projet projet : projets){
-            elasticClient.creerIndexObjectNative("projets","projet",projet,projet.getId());
+        for (Projet projet : projets) {
+            elasticClient.creerIndexObjectNative("projets", "projet", projet, projet.getId());
 //            LOG.info("projet "+projet.getNom()+" created");
         }
         return true;
     }
 
-    public boolean createIndexPhase()throws Exception{
+    public boolean createIndexPhase() throws Exception {
 //        ElasticClient elasticClient = new ElasticClient();
         List<Phase> Phases = PhaseCRUD.read();
-        for (Phase Phase : Phases){
-            elasticClient.creerIndexObjectNative("phases","phase",Phase,Phase.getId());
+        for (Phase Phase : Phases) {
+            elasticClient.creerIndexObjectNative("phases", "phase", Phase, Phase.getId());
 //            LOG.info("Phase "+Phase.getNom()+" created");
         }
         return true;
     }
 
-    public boolean createIndexRegion()throws Exception{
+    public boolean createIndexRegion() throws Exception {
 //        ElasticClient elasticClient = new ElasticClient();
         List<Region> regions = RegionCRUD.read();
-        for (Region region : regions){
-            elasticClient.creerIndexObjectNative("regions","region",region,region.getId());
+        for (Region region : regions) {
+            elasticClient.creerIndexObjectNative("regions", "region", region, region.getId());
 //            LOG.info("region "+region.getNom()+" created");
         }
-        return  true;
+        return true;
     }
     /**
      * Loading Projet Web Service client
      */
-    @PostConstruct
-    public void init() {
-        client = new NotificationClient();
-
-
-    }
 
     /**
      * Insert the given project in the database
@@ -132,10 +130,12 @@ public class ProjetService {
      * @throws SQLException
      */
     public ProjetWS read(int id) throws Exception {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("id", "=", id));
+        //Criterias criterias = new Criterias();
+        //criterias.addCriteria(new Criteria("id", "=", id));
 //        Projet projet = ProjetCRUD.read(criterias).get(0);
-        Projet projet = getAllProjet().stream().filter(t->t.getId()==id).findFirst().get();
+        if (this.projets.isEmpty())
+            getAllProjet();
+        Projet projet = this.projets.stream().filter(t -> t.getId() == id).findFirst().get();
         return helper.buildProjetWS(projet);
     }
 
@@ -147,9 +147,11 @@ public class ProjetService {
      * @throws SQLException
      */
     public PhaseWS readPhase(int id) throws Exception {
-        Criterias criterias = new Criterias();
-        criterias.addCriteria(new Criteria("id", "=", id));
-        Phase phase = getAllPhase().stream().filter(t->t.getId()==id).findFirst().get();
+//        Criterias criterias = new Criterias();
+//        criterias.addCriteria(new Criteria("id", "=", id));
+        if (this.phases.isEmpty())
+            getAllPhase();
+        Phase phase = this.phases.stream().filter(t -> t.getId() == id).findFirst().get();
 //        Phase phase = PhaseCRUD.read(criterias).get(0);
         return helper.buildPhaseWS(phase);
     }
@@ -162,7 +164,10 @@ public class ProjetService {
      * @throws Exception
      */
     public boolean update(Projet projet) throws Exception {
-        return ProjetCRUD.update(projet);
+        ProjetCRUD.update(projet);
+        createIndexProjet();
+        return true;
+
     }
 
     /**
@@ -173,7 +178,9 @@ public class ProjetService {
      * @throws Exception
      */
     public boolean updatePhase(Phase phase) throws Exception {
-        return PhaseCRUD.update(phase);
+        PhaseCRUD.update(phase);
+        createIndexRegion();
+        return true;
     }
 
     /**
@@ -185,7 +192,9 @@ public class ProjetService {
      */
     public boolean delete(int id) throws Exception {
         Projet projet = helper.buildProjet(read(id));
-        return ProjetCRUD.delete(projet);
+        ProjetCRUD.delete(projet);
+        createIndexProjet();
+        return true;
     }
 
     /**
@@ -197,7 +206,9 @@ public class ProjetService {
      */
     public boolean deletePhase(int id) throws Exception {
         Phase phase = helper.buildPhase(readPhase(id));
-        return PhaseCRUD.delete(phase);
+        PhaseCRUD.delete(phase);
+        createIndexPhase();
+        return true;
     }
 
     /**
@@ -304,7 +315,9 @@ public class ProjetService {
         List<String> fields = RequestParser.getFields(request);
         List<Projet> projets = new ArrayList<>();
         if (criterias == null && fields == null) {
-            projets = getAllProjet();
+            if (this.projets.isEmpty())
+                getAllProjet();
+            projets = this.projets;
         } else if (criterias != null && fields == null) {
             projets = ProjetCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -317,14 +330,15 @@ public class ProjetService {
 
     }
 
-    public List<Projet> getAllProjet() throws Exception{
-         elasticClient = new ElasticClient();
+    public List<Projet> getAllProjet() throws Exception {
+        elasticClient = new ElasticClient();
         List<Object> objects = elasticClient.getAllObject("projets");
         ModelMapper modelMapper = new ModelMapper();
         List<Projet> rest = new ArrayList<>();
-        for(Object obj:objects){
-            rest.add(modelMapper.map(obj,Projet.class));
+        for (Object obj : objects) {
+            rest.add(modelMapper.map(obj, Projet.class));
         }
+        this.projets = rest;
         return rest;
     }
 
@@ -334,14 +348,15 @@ public class ProjetService {
 //
 //    }
 
-    public List<Phase> getAllPhase() throws Exception{
-         elasticClient = new ElasticClient();
+    public List<Phase> getAllPhase() throws Exception {
+        elasticClient = new ElasticClient();
         List<Object> objects = elasticClient.getAllObject("phases");
         ModelMapper modelMapper = new ModelMapper();
         List<Phase> rest = new ArrayList<>();
-        for(Object obj:objects){
-            rest.add(modelMapper.map(obj,Phase.class));
+        for (Object obj : objects) {
+            rest.add(modelMapper.map(obj, Phase.class));
         }
+        this.phases = rest;
         return rest;
     }
 
@@ -352,14 +367,15 @@ public class ProjetService {
 //    }
 
 
-    public List<Region> getAllRegion() throws Exception{
+    public List<Region> getAllRegion() throws Exception {
 //         elasticClient = new ElasticClient();
         List<Object> objects = elasticClient.getAllObject("regions");
         ModelMapper modelMapper = new ModelMapper();
         List<Region> rest = new ArrayList<>();
-        for(Object obj:objects){
-            rest.add(modelMapper.map(obj,Region.class));
+        for (Object obj : objects) {
+            rest.add(modelMapper.map(obj, Region.class));
         }
+        this.regions = rest;
         return rest;
     }
 //
@@ -384,7 +400,10 @@ public class ProjetService {
         List<String> fields = RequestParser.getFields(request);
         List<Phase> phases = new ArrayList<>();
         if (criterias == null && fields == null) {
-            phases = getAllPhase();
+            if (this.phases.isEmpty())
+                getAllPhase();
+            phases = this.phases;
+
         } else if (criterias != null && fields == null) {
             phases = PhaseCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -404,7 +423,9 @@ public class ProjetService {
      * @throws SQLException
      */
     public int getCountProject() throws Exception {
-        return (int)getAllProjet().stream().count();
+        if (this.projets.isEmpty())
+            getAllProjet();
+        return (int) this.projets.stream().count();
     }
 
     /**
@@ -415,12 +436,14 @@ public class ProjetService {
      */
     public List<PhaseWS> getPhasesActuelles(int idProjet) throws SQLException, Exception, DatabaseException, InvocationTargetException {
 
-        Criterias criterias = new Criterias();
+//        Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria(new Rule("projet.id","=",idProjet),"AND"));
-        criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
+//        criterias.addCriteria(new Criteria(new Rule("actif", "=", true), null));
 
 //        List<Phase> phases = PhaseCRUD.read(criterias);
-        List<Phase> phases = getAllPhase().stream().filter(t->t.isActif()).collect(Collectors.toList());
+        if (this.phases.isEmpty())
+            getAllPhase();
+        List<Phase> phases = this.phases.stream().filter(t -> t.isActif()).collect(Collectors.toList());
         List<Phase> phasesActuelles = new ArrayList<>();
         phasesActuelles.clear();
         for (Phase phase : phases) {
@@ -573,8 +596,9 @@ public class ProjetService {
      * @return region
      * @throws SQLException
      */
-    public RegionWS createRegion(Region region) throws SQLException {
+    public RegionWS createRegion(Region region) throws Exception {
         RegionCRUD.create(region);
+        createIndexRegion();
         return helper.buildRegionWS(region);
     }
 
@@ -589,7 +613,10 @@ public class ProjetService {
 //        Criterias criterias = new Criterias();
 //        criterias.addCriteria(new Criteria("nom", "=", nom));
 //        Region region = RegionCRUD.read(criterias).get(0);
-        Region region = getAllRegion().stream().filter(t->t.getNom().equalsIgnoreCase(nom)).findFirst().get();
+        if (this.regions.isEmpty())
+            getAllRegion();
+
+        Region region = this.regions.stream().filter(t -> t.getNom().equalsIgnoreCase(nom)).findFirst().get();
         return helper.buildRegionWS(region);
     }
 
@@ -601,7 +628,9 @@ public class ProjetService {
      * @throws Exception
      */
     public boolean updateRegion(Region region) throws Exception {
-        return RegionCRUD.update(region);
+        RegionCRUD.update(region);
+        createIndexRegion();
+        return true;
     }
 
     /**
@@ -613,7 +642,9 @@ public class ProjetService {
      */
     public boolean deleteRegion(String nom) throws Exception {
         Region region = helper.buildRegion(readRegion(nom));
-        return RegionCRUD.delete(region);
+        RegionCRUD.delete(region);
+        createIndexRegion();
+        return true;
     }
 
     /**
@@ -631,7 +662,9 @@ public class ProjetService {
         List<String> fields = RequestParser.getFields(request);
         List<Region> regions = null;
         if (criterias == null && fields == null) {
-            regions = getAllRegion();
+            if (this.regions.isEmpty())
+                getAllRegion();
+            regions = this.regions;
         } else if (criterias != null && fields == null) {
             regions = RegionCRUD.read(criterias);
         } else if (criterias == null && fields != null) {
@@ -643,7 +676,6 @@ public class ProjetService {
         return helper.buildListRegionWS(regions);
 
     }
-
 
 
 }

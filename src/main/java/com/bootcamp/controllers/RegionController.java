@@ -55,7 +55,7 @@ public class RegionController {
     @RequestMapping(method = RequestMethod.POST)
     @ApiVersions({"1.0"})
     @ApiOperation(value = "Create a new project location", notes = "Create a new project location")
-    public ResponseEntity<RegionWS> createRegion(@RequestBody Region region) throws SQLException {
+    public ResponseEntity<RegionWS> createRegion(@RequestBody Region region) throws Exception {
         RegionWS result = projetService.createRegion(region);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

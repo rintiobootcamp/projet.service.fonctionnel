@@ -7,6 +7,7 @@
  */
 package com.bootcamp.application;
 
+import com.bootcamp.services.ProjetService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -43,6 +44,13 @@ public class Application extends SpringBootServletInitializer {
     public static void main(String[] args) {
 
         SpringApplication.run(Application.class, args);
+        try {
+            new ProjetService().createIndexRegion();
+            new ProjetService().createIndexPhase();
+            new ProjetService().createIndexProjet();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
